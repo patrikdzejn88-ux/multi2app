@@ -42,6 +42,19 @@ class SpaceRepository @Inject constructor(
     fun app(pkg: String, spaceId: Int): Flow<ClonedAppEntity?> =
         clonedAppDao.observeOne(pkg, spaceId)
 
+    suspend fun getAppOnce(pkg: String, spaceId: Int): ClonedAppEntity? =
+        clonedAppDao.getOne(pkg, spaceId)
+
+    suspend fun getRunningApps(): List<ClonedAppEntity> = clonedAppDao.getRunning()
+
+    suspend fun assignSlot(pkg: String, spaceId: Int, slot: Int) {
+        clonedAppDao.getOne(pkg, spaceId)?.let { clonedAppDao.update(it.copy(slot = slot)) }
+    }
+
+    suspend fun releaseSlot(pkg: String, spaceId: Int) {
+        clonedAppDao.getOne(pkg, spaceId)?.let { clonedAppDao.update(it.copy(slot = -1)) }
+    }
+
     fun appCountOfSpace(spaceId: Int): Flow<Int> =
         clonedAppDao.observeCountOfSpace(spaceId)
 

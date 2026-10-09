@@ -30,11 +30,17 @@ NEW Proxy manager (SOCKS5/HTTP(S), per-space scope, TCP test), night-mode
 theme wiring. TODO later: about, memory, storage, fileTransfer, lock,
 privateSpace, buyVip screens.
 
-### M2 — Engine integration
-Open VirtualApp-family core (BlackBoxCore-class) as `engine/` module:
-`:admin` process services/providers, `:proxy.p0..N` stub slots (manifest already
-declares pattern), install/launch/uninstall/repair/clear flows behind
-`VirtualRequestActivity`-style task dialog with the original state strings.
+### M2 — Engine integration  [DONE core]
+Own engine core implemented (no external VA fork): sandbox layout
+(filesDir/virtual/spaces/<id>/<pkg>/{apk,data,cache,media,obb,dexopt,lib}),
+ApkInstaller (host clone + .apk/.xapk/.apks import, native lib extraction by
+ABI), EngineTaskManager serial queue with original task-state strings,
+CloneLauncher slot allocator (p0..p9, expandable to 500), ProxyProcessRuntime,
+GuestRuntime (DexClassLoader + AssetManager.addAssetPath + sandboxed
+GuestContext + guest Application attach), HiddenApiBypass (meta-reflection,
+pure Java). VirtualRequestActivity shows LIVE task state.
+NEXT ITERATION: guest Activity UI attach (per-API-level Activity.attach),
+system-service hooks, expand slots to p499.
 
 ### M3 — Space & app management
 Room schema (spaces, cloned apps, pins, hidden, per-app hook options),

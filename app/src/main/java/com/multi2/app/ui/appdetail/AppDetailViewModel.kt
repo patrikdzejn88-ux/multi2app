@@ -5,7 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.multi2.app.data.SpaceRepository
 import com.multi2.app.data.db.ClonedAppEntity
+import com.multi2.app.engine.launch.CloneLauncher
+import com.multi2.app.engine.task.EngineTask
+import com.multi2.app.engine.task.EngineTaskManager
+import com.multi2.app.engine.task.EngineTaskType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -16,6 +21,8 @@ import javax.inject.Inject
 class AppDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val spaceRepository: SpaceRepository,
+    private val cloneLauncher: CloneLauncher,
+    private val taskManager: EngineTaskManager,
 ) : ViewModel() {
 
     private val pkg: String = checkNotNull(savedStateHandle["pkg"])
@@ -23,6 +30,15 @@ class AppDetailViewModel @Inject constructor(
 
     val app: StateFlow<ClonedAppEntity?> = spaceRepository.app(pkg, spaceId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    /** -1 = not running; otherwise proxy slot. */
+    val runningSlot = MutableStateFlow(-1)
+
+    init {
+        viewModelScope.launch {
+            app.collect { runningSlot.value = it?.slot ?: -1 }
+        }
+    }
 
     private fun update(transform: (ClonedAppEntity) -> ClonedAppEntity) {
         viewModelScope.launch {
@@ -40,9 +56,52 @@ class AppDetailViewModel @Inject constructor(
     fun setLaunchMode(mode: Int) = update { it.copy(launchMode = mode) }
     fun setFakeLabel(label: String?) = update { it.copy(fakeLabel = label) }
 
+    // ---- engine actions ----
+
+    fun open(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val slot = cloneLauncher.launch(pkg, spaceId)
+            onResult(slot >= 0)
+        }
+    }
+
+    fun stop() {
+        viewModelScope.launch {
+            taskManager.submit(
+                EngineTask(System.nanoTime(), EngineTaskType.FORCE_STOP, pkg, spaceId),
+            )
+        }
+    }
+
+    fun fix() {
+        viewModelScope.launch {
+            taskManager.submit(
+                EngineTask(System.nanoTime(), EngineTaskType.REPAIR, pkg, spaceId),
+            )
+        }
+    }
+
+    fun clearCache() {
+        viewModelScope.launch {
+            taskManager.submit(
+                EngineTask(System.nanoTime(), EngineTaskType.CLEAR_CACHE, pkg, spaceId),
+            )
+        }
+    }
+
+    fun generateDeviceId() {
+        viewModelScope.launch {
+            taskManager.submit(
+                EngineTask(System.nanoTime(), EngineTaskType.GENERATE_ID, pkg, spaceId),
+            )
+        }
+    }
+
     fun uninstall(onDone: () -> Unit) {
         viewModelScope.launch {
-            spaceRepository.removeApp(pkg, spaceId)
+            taskManager.submit(
+                EngineTask(System.nanoTime(), EngineTaskType.UNINSTALL, pkg, spaceId),
+            )
             onDone()
         }
     }

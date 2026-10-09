@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [SpaceEntity::class, ClonedAppEntity::class, ProxyEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class Multi2Database : RoomDatabase() {

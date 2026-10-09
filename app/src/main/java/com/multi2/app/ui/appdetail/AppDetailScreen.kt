@@ -108,17 +108,38 @@ fun AppDetailScreen(
             }
             Spacer(Modifier.height(16.dp))
 
-            // Primary actions (engine, M2)
+            // Primary actions (engine)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                EngineActionButton(stringResource(R.string.app_detail_open))
-                EngineActionButton(stringResource(R.string.app_stop))
-                EngineActionButton(stringResource(R.string.app_detail_fix))
-                EngineActionButton(stringResource(R.string.app_detail_fix_shortcut))
+                OutlinedButton(onClick = {
+                    viewModel.open { ok ->
+                        Toast.makeText(
+                            context,
+                            if (ok) R.string.app_detail_open else R.string.engine_request_task_install_fail,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }) { Text(stringResource(R.string.app_detail_open), maxLines = 1) }
+                OutlinedButton(onClick = { viewModel.stop() }) {
+                    Text(stringResource(R.string.app_stop), maxLines = 1)
+                }
+                OutlinedButton(onClick = { viewModel.fix() }) {
+                    Text(stringResource(R.string.app_detail_fix), maxLines = 1)
+                }
+                OutlinedButton(onClick = {
+                    Toast.makeText(context, "Shortcut — M3", Toast.LENGTH_SHORT).show()
+                }) { Text(stringResource(R.string.app_detail_fix_shortcut), maxLines = 1) }
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                EngineActionButton(stringResource(R.string.app_detail_export_data))
-                EngineActionButton(stringResource(R.string.app_detail_virtual_id))
+                OutlinedButton(onClick = {
+                    Toast.makeText(context, "Export — M3", Toast.LENGTH_SHORT).show()
+                }) { Text(stringResource(R.string.app_detail_export_data), maxLines = 1) }
+                OutlinedButton(onClick = { viewModel.generateDeviceId() }) {
+                    Text(stringResource(R.string.app_detail_virtual_id), maxLines = 1)
+                }
+                OutlinedButton(onClick = { viewModel.clearCache() }) {
+                    Text(stringResource(R.string.storage_pkg_clear_cache), maxLines = 1)
+                }
             }
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
@@ -221,14 +242,6 @@ fun AppDetailScreen(
             },
         )
     }
-}
-
-@Composable
-private fun EngineActionButton(title: String) {
-    val context = LocalContext.current
-    OutlinedButton(onClick = {
-        Toast.makeText(context, "Engine task — M2", Toast.LENGTH_SHORT).show()
-    }) { Text(title, maxLines = 1) }
 }
 
 @Composable

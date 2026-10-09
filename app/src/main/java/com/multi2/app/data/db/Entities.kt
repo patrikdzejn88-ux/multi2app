@@ -33,6 +33,7 @@ data class ClonedAppEntity(
     val hideDevMode: Boolean = false,
     val denyReadHostApps: Boolean = false,
     val installState: Int = INSTALL_STATE_PENDING,
+    val slot: Int = -1,                // proxy process slot p0..pN when running, -1 = stopped
     val createdAt: Long = System.currentTimeMillis(),
 ) {
     companion object {

@@ -14,32 +14,39 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.multi2.app.R
+import com.multi2.app.engine.task.EngineTask
+import com.multi2.app.engine.task.EngineTaskManager
 import com.multi2.app.ui.theme.Multi2Theme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Engine task-request dialog — parity with
  * org.waxmoon.play.engine.sdk.virtual.VirtualRequestActivity
  * (action com.multi2.action.request, translucent dialog theme).
  *
- * Shows engine task states: Checking → Waiting → Copying apk → Analyzing →
- * Installing/Uninstalling/Repairing/Clearing/Force stop/Generating → result.
- * Real task wiring lands in M2 together with the engine core.
+ * Shows the LIVE current engine task state (Checking → Copying → Analyzing →
+ * Installing/… → result) with the original's strings.
  */
+@AndroidEntryPoint
 class VirtualRequestActivity : ComponentActivity() {
+
+    @Inject lateinit var taskManager: EngineTaskManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val stateText = intent.getStringExtra(EXTRA_STATE)
-            ?: getString(R.string.engine_request_task_checking)
         setContent {
             Multi2Theme {
-                EngineRequestDialog(stateText = stateText, onClose = { finish() })
+                val task by taskManager.current.collectAsStateWithLifecycle()
+                EngineRequestDialog(task = task, onClose = { finish() })
             }
         }
     }
@@ -50,16 +57,36 @@ class VirtualRequestActivity : ComponentActivity() {
 }
 
 @Composable
-fun EngineRequestDialog(stateText: String, onClose: () -> Unit) {
+fun EngineRequestDialog(task: EngineTask?, onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose) {
         Card {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                CircularProgressIndicator()
-                Spacer(Modifier.height(16.dp))
-                Text(stateText, style = MaterialTheme.typography.bodyLarge)
+                if (task == null) {
+                    Text(
+                        stringResource(R.string.engine_request_task_in_queue),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                } else {
+                    val isRunning = task.state in RUNNING_STATES
+                    if (isRunning) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(16.dp))
+                    }
+                    Text(task.label, style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(4.dp))
+                    Text(stringResource(task.state.stringRes), style = MaterialTheme.typography.bodyLarge)
+                    task.error?.let {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
                 Spacer(Modifier.height(16.dp))
                 TextButton(onClick = onClose) {
                     Text(stringResource(R.string.engine_request_close))
@@ -68,3 +95,17 @@ fun EngineRequestDialog(stateText: String, onClose: () -> Unit) {
         }
     }
 }
+
+private val RUNNING_STATES = setOf(
+    com.multi2.app.engine.task.EngineTaskState.CHECKING,
+    com.multi2.app.engine.task.EngineTaskState.QUEUED,
+    com.multi2.app.engine.task.EngineTaskState.COPYING,
+    com.multi2.app.engine.task.EngineTaskState.ANALYZING,
+    com.multi2.app.engine.task.EngineTaskState.INSTALLING,
+    com.multi2.app.engine.task.EngineTaskState.UNINSTALLING,
+    com.multi2.app.engine.task.EngineTaskState.REPAIRING,
+    com.multi2.app.engine.task.EngineTaskState.CLEARING_CACHE,
+    com.multi2.app.engine.task.EngineTaskState.CLEARING_DATA,
+    com.multi2.app.engine.task.EngineTaskState.FORCE_STOPPING,
+    com.multi2.app.engine.task.EngineTaskState.GENERATING,
+)

@@ -1,6 +1,8 @@
 package com.multi2.app.ui.apps
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -74,8 +76,16 @@ fun AppsScreen(
                     }
                 },
                 actions = {
+                    val importLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.OpenDocument(),
+                    ) { uri ->
+                        if (uri != null) {
+                            val spaceId = spaces.firstOrNull()?.id ?: 1
+                            viewModel.importFromFile(uri, spaceId)
+                        }
+                    }
                     TextButton(onClick = {
-                        Toast.makeText(context, R.string.apps_menu_install_from_file, Toast.LENGTH_SHORT).show()
+                        importLauncher.launch(arrayOf("*/*"))
                     }) {
                         Text(stringResource(R.string.apps_menu_install_from_file))
                     }

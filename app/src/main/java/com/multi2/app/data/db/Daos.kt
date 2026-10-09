@@ -40,6 +40,12 @@ interface ClonedAppDao {
     @Query("SELECT * FROM cloned_apps WHERE pkg = :pkg AND spaceId = :spaceId")
     fun observeOne(pkg: String, spaceId: Int): Flow<ClonedAppEntity?>
 
+    @Query("SELECT * FROM cloned_apps WHERE pkg = :pkg AND spaceId = :spaceId")
+    suspend fun getOne(pkg: String, spaceId: Int): ClonedAppEntity?
+
+    @Query("SELECT * FROM cloned_apps WHERE slot >= 0")
+    suspend fun getRunning(): List<ClonedAppEntity>
+
     @Query("SELECT COUNT(*) FROM cloned_apps WHERE spaceId = :spaceId")
     fun observeCountOfSpace(spaceId: Int): Flow<Int>
 

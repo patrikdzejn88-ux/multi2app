@@ -96,6 +96,16 @@
     <string name="hook_deny_read_host_apps">Disable Read phone\'s apps</string>
     <string name="app_detail_app_fake">App Fake</string>
     <string name="app_detail_uninstall">Uninstall</string>
+    <string name="space_app_item_menu_pin">Sticky on Top</string>
+    <string name="space_app_item_menu_unpin">Remove on Top</string>
+    <string name="shortcut_hint_title">Shortcut Request Sent</string>
+    <string name="appzip_save_success">The app information has been saved to the file manager!</string>
+    <string name="appzip_save_failed">Failed to save app data information!</string>
+    <string name="virtual_device_info_title">Device Info</string>
+    <string name="virtual_id_reset_title">Reset virtual ID</string>
+    <string name="virtual_id_reset_message">The system provide a virtual lD(likely as device id, wifi mac) to installed apps. You can reset a virtual ID to prevent app from tracking your behavior and preferences and protect your privacy. If you reset it now, your app data might be lost or become unusable. Reset virtual ID anyway?</string>
+    <string name="virtual_device_info_reset_btn">Reset</string>
+    <string name="vinfo_copy">Copy</string>
     <string name="label_def">Label</string>
     <string name="dialog_message_uninstall">Are you sure you want to uninstall the app?</string>
 

@@ -126,6 +126,54 @@ fun HomeScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                val pinned = spaces.flatMap { s ->
+                    s.apps.filter { it.pinned }.map { Triple(it, s.id, s.title) }
+                }
+                if (pinned.isNotEmpty()) {
+                    item(key = "stick_apps") {
+                        Card(Modifier.fillMaxWidth()) {
+                            Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                                Text(
+                                    stringResource(R.string.stick_card_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                pinned.forEach { (app, spaceId, spaceTitle) ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { onOpenApp(app.pkg, spaceId) }
+                                            .padding(vertical = 6.dp),
+                                    ) {
+                                        val icon = rememberAppIcon(app.pkg)
+                                        if (icon != null) {
+                                            Image(
+                                                bitmap = icon,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(32.dp),
+                                            )
+                                        } else {
+                                            Spacer(Modifier.size(32.dp))
+                                        }
+                                        Spacer(Modifier.width(10.dp))
+                                        Column {
+                                            Text(
+                                                app.fakeLabel ?: app.label,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                maxLines = 1,
+                                            )
+                                            Text(
+                                                spaceTitle,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 items(spaces, key = { it.id }) { space ->
                     SpaceCard(
                         space = space,

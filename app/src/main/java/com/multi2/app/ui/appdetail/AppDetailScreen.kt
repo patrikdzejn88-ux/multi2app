@@ -1,6 +1,8 @@
 package com.multi2.app.ui.appdetail
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,17 +36,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.multi2.app.R
-import com.multi2.app.data.db.ClonedAppEntity
+import com.multi2.app.engine.AppDataExporter
+import com.multi2.app.engine.launch.CloneShortcutManager
 import com.multi2.app.ui.util.rememberAppIcon
+import kotlinx.coroutines.launch
 
 /**
  * App Detail — parity with ui/page/router/appDetail.
@@ -55,12 +61,30 @@ import com.multi2.app.ui.util.rememberAppIcon
 @Composable
 fun AppDetailScreen(
     onBack: () -> Unit,
+    onOpenDeviceInfo: (String, Int) -> Unit,
     viewModel: AppDetailViewModel = hiltViewModel(),
 ) {
     val app by viewModel.app.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showFakeDialog by remember { mutableStateOf(false) }
     var showUninstallDialog by remember { mutableStateOf(false) }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip"),
+    ) { uri ->
+        val entity = app
+        if (uri != null && entity != null) {
+            scope.launch {
+                val result = AppDataExporter.export(context, entity.spaceId, entity.pkg, uri)
+                Toast.makeText(
+                    context,
+                    if (result.isSuccess) R.string.appzip_save_success else R.string.appzip_save_failed,
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -88,9 +112,9 @@ fun AppDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
         ) {
+            val icon = rememberAppIcon(entity.pkg)
             // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val icon = rememberAppIcon(entity.pkg)
                 if (icon != null) {
                     Image(bitmap = icon, contentDescription = null, modifier = Modifier.size(56.dp))
                 } else {
@@ -126,15 +150,23 @@ fun AppDetailScreen(
                     Text(stringResource(R.string.app_detail_fix), maxLines = 1)
                 }
                 OutlinedButton(onClick = {
-                    Toast.makeText(context, "Shortcut — M3", Toast.LENGTH_SHORT).show()
+                    val ok = CloneShortcutManager.pin(
+                        context, entity.pkg, entity.spaceId,
+                        entity.fakeLabel ?: entity.label, icon?.asBitmap(),
+                    )
+                    Toast.makeText(
+                        context,
+                        if (ok) R.string.shortcut_hint_title else R.string.appzip_save_failed,
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }) { Text(stringResource(R.string.app_detail_fix_shortcut), maxLines = 1) }
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = {
-                    Toast.makeText(context, "Export — M3", Toast.LENGTH_SHORT).show()
+                    exportLauncher.launch("${entity.pkg}.zip")
                 }) { Text(stringResource(R.string.app_detail_export_data), maxLines = 1) }
-                OutlinedButton(onClick = { viewModel.generateDeviceId() }) {
+                OutlinedButton(onClick = { onOpenDeviceInfo(entity.pkg, entity.spaceId) }) {
                     Text(stringResource(R.string.app_detail_virtual_id), maxLines = 1)
                 }
                 OutlinedButton(onClick = { viewModel.clearCache() }) {
@@ -146,6 +178,11 @@ fun AppDetailScreen(
             Spacer(Modifier.height(8.dp))
 
             // Local options (persisted)
+            OptionSwitch(
+                title = stringResource(R.string.space_app_item_menu_pin),
+                checked = entity.pinned,
+                onChange = { viewModel.setPinned(it) },
+            )
             OptionSwitch(
                 title = stringResource(R.string.app_detail_hidden_app),
                 checked = entity.hidden,

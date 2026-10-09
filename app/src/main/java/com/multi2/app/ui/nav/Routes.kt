@@ -25,11 +25,12 @@ object Routes {
     const val STORAGE = "sinfo"                     // storage manager
     const val SPACE_FOLDER = "folder"
     const val FILE_TRANSFER = "file_transfer"
-    const val VIRTUAL_DEVICE_INFO = "vinfo"
+    const val VIRTUAL_DEVICE_INFO = "vinfo/{pkg}/{userId}"
     const val LOCK = "lock"
     const val PRIVATE_SPACE = "private_space"
     const val PROXY = "proxy"                       // NEW: proxy manager (not in original)
 
     fun appDetail(pkg: String, userId: Int) = "detail/$pkg/$userId"
     fun launch(pkg: String, userId: Int) = "launch/$pkg/$userId"
+    fun virtualDeviceInfo(pkg: String, userId: Int) = "vinfo/$pkg/$userId"
 }

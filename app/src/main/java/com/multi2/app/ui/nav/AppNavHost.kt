@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.multi2.app.ui.about.AboutScreen
 import com.multi2.app.ui.appdetail.AppDetailScreen
 import com.multi2.app.ui.apps.AppsScreen
+import com.multi2.app.ui.deviceinfo.VirtualDeviceInfoScreen
 import com.multi2.app.ui.home.HomeScreen
 import com.multi2.app.ui.language.LanguageScreen
 import com.multi2.app.ui.memory.MemoryScreen
@@ -49,13 +50,26 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("userId") { type = NavType.IntType },
             ),
         ) {
-            AppDetailScreen(onBack = { navController.popBackStack() })
+            AppDetailScreen(
+                onBack = { navController.popBackStack() },
+                onOpenDeviceInfo = { pkg, spaceId ->
+                    navController.navigate(Routes.virtualDeviceInfo(pkg, spaceId))
+                },
+            )
         }
-        // M3/M5 remainder
+        composable(
+            route = Routes.VIRTUAL_DEVICE_INFO,
+            arguments = listOf(
+                navArgument("pkg") { type = NavType.StringType },
+                navArgument("userId") { type = NavType.IntType },
+            ),
+        ) {
+            VirtualDeviceInfoScreen(onBack = { navController.popBackStack() })
+        }
+        // M5 remainder
         composable(Routes.CHOICE) { PlaceholderScreen("Choose apps") }
         composable(Routes.SPACE_FOLDER) { PlaceholderScreen("Space Folder") }
         composable(Routes.FILE_TRANSFER) { PlaceholderScreen("File Transfer") }
-        composable(Routes.VIRTUAL_DEVICE_INFO) { PlaceholderScreen("Device Info") }
         composable(Routes.LOCK) { PlaceholderScreen("Set a lock") }
         composable(Routes.PRIVATE_SPACE) { PlaceholderScreen("Private Space") }
     }

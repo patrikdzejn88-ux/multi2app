@@ -2,18 +2,24 @@ package com.multi2.app.proxy
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.multi2.app.R
+import com.multi2.app.engine.guest.GuestActivityLauncher
 import com.multi2.app.engine.launch.CloneLauncher
 
 /**
  * Assist/stub activity — parity with org.waxmoon.play.proxy.AssistActivity.
- * Runs in :proxy.pN; boots the guest code via ProxyProcessRuntime and shows
- * a minimal status view until guest Activity attach lands (next iteration).
+ * Runs in :proxy.pN: boots the guest (GuestRuntime), attaches the guest's
+ * launcher Activity and transplants its DecorView into this stub's frame.
+ * Lifecycle (resume/pause/destroy) is forwarded to the guest.
  */
 open class AssistActivity : Activity() {
+
+    private var guestActivity: Activity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +35,7 @@ open class AssistActivity : Activity() {
 
         val status = TextView(this)
         val spinner = ProgressBar(this)
-        val layout = LinearLayout(this).apply {
+        val loading = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val pad = (resources.displayMetrics.density * 32).toInt()
             setPadding(pad, pad, pad, pad)
@@ -37,20 +43,57 @@ open class AssistActivity : Activity() {
             addView(status)
         }
         status.text = getString(R.string.assist_reserve_loading, pkg)
-        setContentView(layout)
+        val frame = FrameLayout(this)
+        frame.addView(loading)
+        setContentView(frame)
 
         Thread {
-            val result = ProxyProcessRuntime.boot(applicationContext, pkg, spaceId, slot)
+            val boot = ProxyProcessRuntime.boot(applicationContext, pkg, spaceId, slot)
             runOnUiThread {
-                result.onSuccess {
-                    spinner.visibility = android.view.View.GONE
-                    status.text = getString(R.string.memory_space_running_title, pkg)
+                boot.onSuccess { guest ->
+                    val launched = GuestActivityLauncher.launch(this, guest, pkg, spaceId)
+                    launched.onSuccess { instance ->
+                        guestActivity = instance.activity
+                        val decor = instance.decorView
+                        if (decor != null) {
+                            frame.removeAllViews()
+                            (decor.parent as? ViewGroup)?.removeView(decor)
+                            frame.addView(
+                                decor,
+                                FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                ),
+                            )
+                        } else {
+                            status.text = getString(R.string.memory_space_running_title, pkg)
+                            spinner.visibility = android.view.View.GONE
+                        }
+                    }.onFailure {
+                        spinner.visibility = android.view.View.GONE
+                        status.text = getString(R.string.memory_space_running_title, pkg)
+                    }
                 }.onFailure {
                     spinner.visibility = android.view.View.GONE
                     status.text = getString(R.string.engine_request_task_install_fail)
                 }
             }
         }.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        guestActivity?.let { GuestActivityLauncher.forwardLifecycle(it, "resume") }
+    }
+
+    override fun onPause() {
+        guestActivity?.let { GuestActivityLauncher.forwardLifecycle(it, "pause") }
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        guestActivity?.let { GuestActivityLauncher.forwardLifecycle(it, "destroy") }
+        super.onDestroy()
     }
 
     class P0 : AssistActivity()

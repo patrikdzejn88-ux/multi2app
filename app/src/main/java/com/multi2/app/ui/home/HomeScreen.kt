@@ -91,6 +91,7 @@ fun HomeScreen(
                 DrawerItem(R.string.drawer_switch_language) { onOpenRoute(Routes.LANGUAGE) }
                 DrawerItem(R.string.drawer_touch_vibrator) { onOpenRoute(Routes.SETTINGS) }
                 DrawerItem(R.string.drawer_display_hidden_apps) { onOpenRoute(Routes.SETTINGS) }
+                DrawerItem(R.string.about_title) { onOpenRoute(Routes.ABOUT) }
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 DrawerGroupLabel(stringResource(R.string.drawer_header_tool))
                 DrawerItem(R.string.drawer_proxy) { onOpenRoute(Routes.PROXY) }

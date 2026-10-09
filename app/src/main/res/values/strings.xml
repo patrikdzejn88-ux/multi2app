@@ -133,6 +133,82 @@
     <string name="proxy_scope_global">All spaces (default)</string>
     <string name="proxy_scope_space">Space: %1$s</string>
 
+    <!-- vip -->
+    <string name="buy_vip_title">Buy VIP</string>
+    <string name="buy_vip_note">"Notes: \nif you continue to purchase, it means that you have read and agreed to the following information:\n1. This is a one-time purchase product. You don\'t have vip privileges without any charges. \n2. After the paid transaction is successful, you will immediately obtain product rights. \n3. Members are bound to the current device. If the device is lost or replaced, the current membership information cannot be maintained. \n4. If vip is not activated, please send Google payment order details to the contact email."</string>
+    <string name="pay_note">"*This is not a subscription service product. \n*You need to purchase it again after the benefits expire"</string>
+    <string name="pay_success">Payment successful</string>
+    <string name="billing_unavailable">Billing Unavaliable</string>
+    <string name="vip_privileges">"VIP Privileges: \n\n1. Remove all ads.\n2. Reset device info.\n3. One-to-one customer service support"</string>
+    <string name="fee_month">30 days</string>
+    <string name="fee_quarter">90 days</string>
+    <string name="fee_annual">365 days</string>
+    <string name="user_info_normal">Regular User</string>
+    <string name="user_info_normal_vip">Free Vip</string>
+    <string name="user_info_pay_vip">Pay VIP</string>
+    <string name="user_info_pay_svip">Supper VIP</string>
+    <string name="user_info_expired_date">Expired %1$s</string>
+    <string name="user_info_coin">Coin: %1$d</string>
+    <string name="free_vip_watch_ad">Watch ad to earn coin</string>
+    <string name="free_vip_redeem">Redeem %1$d coins for %2$d days VIP</string>
+    <string name="free_vip_ad_no_fill">Ad no fill</string>
+    <string name="free_vip_coin_not_enough">Coin not enough</string>
+    <string name="free_vip_earned_toast">Earned one coin</string>
+    <string name="code_redeem_title">Redeem</string>
+    <string name="code_redeem_note">The code is used to redeem VIP</string>
+    <string name="code_redeem_input_holder">Input Redeem code</string>
+    <string name="code_redeem_submit">Submit</string>
+    <string name="code_redeem_success">Redeem success</string>
+    <string name="code_redeem_fail">Redeem Fail</string>
+    <string name="code_redeem_buy_link">Buy Redemption Code</string>
+    <string name="vip_rebind_title">VIP migration</string>
+    <string name="vip_rebind_note">Google Order likely as GPA.****</string>
+    <string name="vip_rebind_limit">Tip：Vip information can only be migrated once a day</string>
+    <string name="vip_rebind_input_holder">Input Google Order</string>
+    <string name="vip_rebind_submit">Submit</string>
+    <string name="vip_rebind_success">success</string>
+
+    <!-- task manager -->
+    <string name="memory_title">Memory</string>
+    <string name="memory_info_title">Memory Info</string>
+    <string name="memory_space_summary">Total: %1$s</string>
+    <string name="memory_space_running_title">%1$s is running</string>
+    <string name="memory_empty_tip">None running App</string>
+    <string name="memory_button_kill">Boost speed</string>
+
+    <!-- storage manager -->
+    <string name="storage_title">Storage</string>
+    <string name="storage_empty_tip">None App</string>
+    <string name="storage_sort_by_size">Sort by storage</string>
+    <string name="storage_sort_by_space">Sort by space</string>
+    <string name="storage_pkg_sumary">Used %1$s</string>
+    <string name="storage_pkg_install_dir">Install Dir</string>
+    <string name="storage_pkg_data_dir">Data&amp;Cache</string>
+    <string name="storage_pkg_cache_dir">Cache</string>
+    <string name="storage_pkg_clear_cache">Clear cache</string>
+    <string name="storage_pkg_clear_data">Clear data</string>
+    <string name="storage_pkg_uninstall">Uninstall</string>
+    <string name="storage_clear_cache_msg">Do you want to clear cache for this app?</string>
+    <string name="storage_clear_data_msg">Do you want to clear all data for this app?</string>
+    <string name="storage_uninstall_msg">Do you want to uninstall this app?</string>
+
+    <!-- about -->
+    <string name="about_title">About us</string>
+    <string name="about_device_id">Device Id</string>
+    <string name="about_developer">Developer</string>
+    <string name="about_developer_dialog_title">Verify Test Account</string>
+    <string name="about_developer_dialog_tip">Please input your account name to activate local test:</string>
+    <string name="about_developer_dialog_holder">Test Account</string>
+    <string name="about_developer_toast_enter_test">Local test mode activated</string>
+    <string name="about_contact">Contact Us</string>
+    <string name="about_email">multi2@example.com</string>
+    <string name="about_github">Github</string>
+    <string name="about_telegram">Telegram</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_privacy_policy_content">How to process your data</string>
+    <string name="about_open_license">Open source license</string>
+    <string name="about_open_license_content">These are open source we used</string>
+
     <!-- common -->
     <string name="btn_cancel">Cancel</string>
     <string name="btn_ok">OK</string>

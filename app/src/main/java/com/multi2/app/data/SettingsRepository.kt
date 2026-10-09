@@ -23,6 +23,7 @@ data class AppSettings(
     val keepAlive: Boolean = false,
     val marqueeBorder: Boolean = false,
     val developerMode: Boolean = false,
+    val language: String = "system",
 )
 
 @Singleton
@@ -36,6 +37,7 @@ class SettingsRepository @Inject constructor(
         val KEEP_ALIVE = booleanPreferencesKey("keep_alive")
         val MARQUEE = booleanPreferencesKey("marquee_border")
         val DEV_MODE = booleanPreferencesKey("developer_mode")
+        val LANGUAGE = stringPreferencesKey("language")
     }
 
     val settings: Flow<AppSettings> = context.settingsStore.data.map { p ->
@@ -47,7 +49,12 @@ class SettingsRepository @Inject constructor(
             keepAlive = p[Keys.KEEP_ALIVE] ?: false,
             marqueeBorder = p[Keys.MARQUEE] ?: false,
             developerMode = p[Keys.DEV_MODE] ?: false,
+            language = p[Keys.LANGUAGE] ?: "system",
         )
+    }
+
+    suspend fun setLanguage(tag: String) {
+        context.settingsStore.edit { it[Keys.LANGUAGE] = tag }
     }
 
     suspend fun setNightMode(mode: NightModeSetting) {

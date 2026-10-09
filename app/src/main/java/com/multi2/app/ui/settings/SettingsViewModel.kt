@@ -43,4 +43,8 @@ class SettingsViewModel @Inject constructor(
     fun setDeveloperMode(value: Boolean) {
         viewModelScope.launch { settingsRepository.setDeveloperMode(value) }
     }
+
+    fun setLanguage(tag: String) {
+        viewModelScope.launch { settingsRepository.setLanguage(tag) }
+    }
 }

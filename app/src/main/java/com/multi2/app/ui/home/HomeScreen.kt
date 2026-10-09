@@ -80,12 +80,6 @@ fun HomeScreen(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
-                DrawerGroupLabel(stringResource(R.string.drawer_header_account))
-                DrawerItem(R.string.drawer_vip_buy_txt) { onOpenRoute(Routes.BUY_VIP) }
-                DrawerItem(R.string.drawer_vip_free_txt) { onOpenRoute(Routes.FREE_VIP) }
-                DrawerItem(R.string.drawer_redeem_code) { onOpenRoute(Routes.CODE_REDEEM) }
-                DrawerItem(R.string.drawer_user_migration) { onOpenRoute(Routes.VIP_REBIND) }
-                HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 DrawerGroupLabel(stringResource(R.string.drawer_header_general))
                 DrawerItem(R.string.drawer_settings) { onOpenRoute(Routes.SETTINGS) }
                 DrawerItem(R.string.drawer_switch_language) { onOpenRoute(Routes.LANGUAGE) }

@@ -180,7 +180,6 @@ private fun CloneSpaceDialog(
     onConfirm: (List<Int>) -> Unit,
 ) {
     var chosen by remember { mutableStateOf(setOf<Int>()) }
-    val overFreeLimit = chosen.size > FREE_MAX_CLONE_SPACES
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -202,20 +201,12 @@ private fun CloneSpaceDialog(
                         Text(title)
                     }
                 }
-                if (overFreeLimit) {
-                    Text(
-                        stringResource(R.string.apps_clone_dialog_vip_tip),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
-                }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onConfirm(chosen.toList()) },
-                enabled = chosen.isNotEmpty() && !overFreeLimit,
+                enabled = chosen.isNotEmpty(),
             ) { Text(stringResource(R.string.btn_ok)) }
         },
         dismissButton = {

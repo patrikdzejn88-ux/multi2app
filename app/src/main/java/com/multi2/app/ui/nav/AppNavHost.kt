@@ -17,10 +17,6 @@ import com.multi2.app.ui.proxy.ProxyScreen
 import com.multi2.app.ui.screens.PlaceholderScreen
 import com.multi2.app.ui.settings.SettingsScreen
 import com.multi2.app.ui.storage.StorageScreen
-import com.multi2.app.ui.vip.BuyVipScreen
-import com.multi2.app.ui.vip.CodeRedeemScreen
-import com.multi2.app.ui.vip.FreeVipScreen
-import com.multi2.app.ui.vip.VipRebindScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -39,10 +35,6 @@ fun AppNavHost(navController: NavHostController) {
         composable(Routes.LANGUAGE) { LanguageScreen(onBack = { navController.popBackStack() }) }
         composable(Routes.MEMORY) { MemoryScreen(onBack = { navController.popBackStack() }) }
         composable(Routes.STORAGE) { StorageScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.BUY_VIP) { BuyVipScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.FREE_VIP) { FreeVipScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.CODE_REDEEM) { CodeRedeemScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.VIP_REBIND) { VipRebindScreen(onBack = { navController.popBackStack() }) }
         composable(
             route = Routes.APP_DETAIL,
             arguments = listOf(

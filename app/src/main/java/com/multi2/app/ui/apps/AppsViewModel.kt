@@ -24,8 +24,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-/** Max spaces selectable without VIP ("Only premium VIP users can clone more than two spaces"). */
-const val FREE_MAX_CLONE_SPACES = 2
+/** Personal build: no VIP gating — clone into any number of spaces. */
 
 @HiltViewModel
 class AppsViewModel @Inject constructor(

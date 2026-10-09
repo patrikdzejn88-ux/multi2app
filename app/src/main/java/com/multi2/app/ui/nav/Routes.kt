@@ -16,10 +16,6 @@ object Routes {
     const val APP_DETAIL = "detail/{pkg}/{userId}"  // cloned app detail
     const val SETTINGS = "main/settings"
     const val ABOUT = "about"
-    const val BUY_VIP = "buy/vip"
-    const val FREE_VIP = "ads/vip"
-    const val CODE_REDEEM = "account/code_redeem"
-    const val VIP_REBIND = "account/vip_rebind"
     const val LANGUAGE = "language"
     const val MEMORY = "minfo"                      // task manager
     const val STORAGE = "sinfo"                     // storage manager

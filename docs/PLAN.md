@@ -47,10 +47,10 @@ Room schema (spaces, cloned apps, pins, hidden, per-app hook options),
 import from installed list + file (.apk/.xapk/.apks), clone dialog (VIP >2),
 app fake (rename/icon), shortcuts, virtual device id, storage/memory managers.
 
-### M4 — Monetization
-Play Billing one-time 30/90/365, coins + rewarded ads (AdMob; AppLovin later),
-redeem codes + VIP rebind via own backend API (replaces waxmoonma.top),
-VIP levels & privileges gating.
+### M4 — Monetization  [CANCELLED — personal build]
+No VIP, no billing, no ads, no backend: this is a personal-use build.
+All features unlocked (clone into any number of spaces, no gating).
+VIP module deleted (screens/repository/routes/drawer).
 
 ### M5 — Private space, file transfer, help
 Pattern lock + biometrics, hidden space; WiFi QR file transfer; help chat;

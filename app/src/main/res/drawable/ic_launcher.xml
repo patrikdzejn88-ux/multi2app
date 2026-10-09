@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- rounded square badge -->
+    <path
+        android:fillColor="#1B6EF3"
+        android:pathData="M22,14 h64 a8,8 0 0 1 8,8 v64 a8,8 0 0 1 -8,8 h-64 a8,8 0 0 1 -8,-8 v-64 a8,8 0 0 1 8,-8 z" />
+    <!-- two overlapping "clone" panes -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,42 h24 a4,4 0 0 1 4,4 v24 a4,4 0 0 1 -4,4 h-24 a4,4 0 0 1 -4,-4 v-24 a4,4 0 0 1 4,-4 z" />
+    <path
+        android:fillColor="#BFD9FE"
+        android:pathData="M46,34 h24 a4,4 0 0 1 4,4 v24 a4,4 0 0 1 -4,4 h-6 v-20 a4,4 0 0 0 -4,-4 h-20 v-4 a4,4 0 0 1 4,-4 z" />
+</vector>

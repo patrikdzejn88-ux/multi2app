@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Multi2 Blue (approximation of CoreDesignSystemTheme.Moon.Blue) -->
+    <color name="ic_launcher_background">#1B6EF3</color>
+    <color name="multi2_blue">#1B6EF3</color>
+    <color name="multi2_blue_dark">#0B4FCC</color>
+    <color name="multi2_surface_dark">#101418</color>
+    <color name="multi2_surface_light">#FDFCFF</color>
+</resources>

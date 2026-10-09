@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Multi2 App</string>
+    <string name="app_name_short">Multi2</string>
+
+    <!-- process names (parity with original string-based process refs) -->
+    <string name="admin_process">:admin</string>
+    <string name="assist_process">:assist</string>
+    <string name="tool_process">:tool</string>
+
+    <!-- engine task flow (engine_va_request_task_* parity) -->
+    <string name="engine_request_close">Close</string>
+    <string name="engine_request_task_checking">Checking...</string>
+    <string name="engine_request_task_in_queue">Waiting...</string>
+    <string name="engine_request_task_pending">Select option...</string>
+    <string name="engine_request_task_copying">Copying apk...</string>
+    <string name="engine_request_task_in_analyze">Analyzing...</string>
+    <string name="engine_request_task_installing">Installing...</string>
+    <string name="engine_request_task_install_complete">Install success!</string>
+    <string name="engine_request_task_install_fail">Install fail!</string>
+    <string name="engine_request_task_uninstalling">Uninstalling...</string>
+    <string name="engine_request_task_uninstall_complete">Uninstall success!</string>
+    <string name="engine_request_task_uninstall_fail">Uninstall fail!</string>
+    <string name="engine_request_task_repairing">Repairing...</string>
+    <string name="engine_request_task_repairing_complete">Repair success!</string>
+    <string name="engine_request_task_repairing_fail">Repair fail!</string>
+    <string name="engine_request_task_clear_app_cache">Clearing cache...</string>
+    <string name="engine_request_task_clear_app_cache_complete">Erase cache success!</string>
+    <string name="engine_request_task_clear_app_cache_fail">Erase cache fail!</string>
+    <string name="engine_request_task_clear_app_data">Clearing data...</string>
+    <string name="engine_request_task_clear_app_data_complete">Erase data success!</string>
+    <string name="engine_request_task_clear_app_data_fail">Erase data fail!</string>
+    <string name="engine_request_task_force_stop">Force stop...</string>
+    <string name="engine_request_task_force_stop_complete">Force Stop success!</string>
+    <string name="engine_request_task_force_stop_fail">Force Stop fail!</string>
+    <string name="engine_request_task_generate_device">Generating...</string>
+    <string name="engine_request_task_generate_device_complete">Generate ID success!</string>
+    <string name="engine_request_task_generate_device_fail">Generate ID fail!</string>
+    <string name="engine_request_task_fail_for_policy">Google Policy Not Allow!</string>
+    <string name="engine_request_unknown">Unknown request!</string>
+    <string name="admin_launch_loading">Engine is starting…</string>
+
+    <!-- home / spaces -->
+    <string name="virtual_space_card_title_holder">Virtual Space-%1$d</string>
+    <string name="space_title_short">VP-%1$d</string>
+    <string name="stick_card_title">Stick Apps</string>
+    <string name="apps_title">Import Apps</string>
+    <string name="apps_menu_install_from_file">Import from file</string>
+
+    <!-- drawer -->
+    <string name="drawer_header_account">Account</string>
+    <string name="drawer_header_general">General</string>
+    <string name="drawer_header_tool">Tool</string>
+    <string name="drawer_vip_buy_txt">Buy VIP</string>
+    <string name="drawer_vip_free_txt">Free VIP</string>
+    <string name="drawer_redeem_code">Redeem code</string>
+    <string name="drawer_user_migration">VIP migration</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_switch_language">Switch Language</string>
+    <string name="drawer_touch_vibrator">Touch vibrator</string>
+    <string name="drawer_display_hidden_apps">Display hidden apps</string>
+    <string name="drawer_hide_hidden_apps">Don\'t show hidden apps</string>
+    <string name="drawer_memory_manager">Task Manager</string>
+    <string name="drawer_storage_manager">Storage Manager</string>
+    <string name="drawer_file_trans">File Transfer</string>
+    <string name="drawer_private_space">Private Space</string>
+    <string name="drawer_find_help">Find Help</string>
+    <string name="drawer_share_app">Share app with friends</string>
+
+    <!-- common -->
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_sure">Sure</string>
+    <string name="confirm">Confirm</string>
+    <string name="close">Close</string>
+    <string name="search">Search</string>
+    <string name="state_empty">Empty</string>
+    <string name="network_error">Network Error</string>
+</resources>

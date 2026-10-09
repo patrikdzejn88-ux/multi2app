@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Package visibility (mirror of original) -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="com.multi2.virtual.ASSIST" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent>
+        <intent>
+            <action android:name="com.android.vending.billing.InAppBillingService.BIND" />
+        </intent>
+        <package android:name="com.tencent.mobileqq" />
+        <package android:name="com.tencent.mm" />
+        <package android:name="com.ss.android.ugc.aweme" />
+        <package android:name="com.zhiliaoapp.musically" />
+        <package android:name="com.ss.android.ugc.trill" />
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+        <package android:name="com.google.android.gms" />
+        <package android:name="com.google.android.gsf" />
+        <package android:name="com.android.vending" />
+        <package android:name="com.google.android.gm" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.facebook.orca" />
+    </queries>
+
+    <permission
+        android:name="com.multi2.app.protect.permission"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.multi2.app.protect.permission" />
+
+    <!-- Core -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Storage / media -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+
+    <!-- Camera / QR -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
+    <!-- Accounts / contacts (clone account proxying) -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.READ_SOCIAL_STREAM" />
+    <uses-permission android:name="android.permission.WRITE_SOCIAL_STREAM" />
+
+    <!-- Phone / device -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.READ_BASIC_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <!-- Task / process management -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.PERSISTENT_ACTIVITY" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+
+    <!-- Biometrics / lock -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- Launcher shortcuts for clones -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
+
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:name=".Multi2Application"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:preserveLegacyExternalStorage="true"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Multi2"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="35">
+
+        <!-- ============ MAIN PROCESS (UI) ============ -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.multi2.app.main" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Deep-link router (mirror of moon://main.router.ma/*) -->
+        <activity
+            android:name=".RouterActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="standard"
+            android:permission="com.multi2.app.protect.permission">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="multi2" />
+                <data android:host="main.router" />
+            </intent-filter>
+        </activity>
+
+        <!-- Engine task-request dialog flow -->
+        <activity
+            android:name=".engine.sdk.virtual.VirtualRequestActivity"
+            android:configChanges="orientation|screenSize|uiMode"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Multi2.Translucent">
+            <intent-filter>
+                <action android:name="com.multi2.action.request" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Clone launch bridge -->
+        <activity
+            android:name=".BridgeLauncherActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:process="@string/admin_process"
+            android:theme="@style/Theme.Multi2.Translucent">
+            <intent-filter>
+                <action android:name="com.android.virtual.bridge" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Clone desktop shortcut entry -->
+        <activity
+            android:name=".CompatShortcutPrepareActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.android.virtual.launcher" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============ ADMIN PROCESS (virtualization manager) ============ -->
+
+        <service
+            android:name=".admin.AdminService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            android:process="@string/admin_process" />
+
+        <service
+            android:name=".admin.CompatAdminService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            android:process="@string/admin_process" />
+
+        <service
+            android:name=".admin.AssistService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            android:process="@string/admin_process" />
+
+        <provider
+            android:name=".admin.AdminProvider"
+            android:authorities="com.multi2.app:AdminProvider"
+            android:exported="true"
+            android:process="@string/admin_process" />
+
+        <provider
+            android:name=".admin.AssistProvider"
+            android:authorities="com.multi2.app:AssistProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:process="@string/admin_process" />
+
+        <provider
+            android:name=".admin.ToolProvider"
+            android:authorities="com.multi2.app:ToolProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:process="@string/admin_process" />
+
+        <provider
+            android:name=".proxy.ProxyFileProvider"
+            android:authorities="com.multi2.app:ProxyFileProvider"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:process="@string/admin_process">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <service
+            android:name=".proxy.ProxyNotificationService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:process="@string/admin_process">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".proxy.AssistActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:process="@string/admin_process"
+            android:screenOrientation="behind"
+            android:taskAffinity="com.multi2.app.vt"
+            android:theme="@style/Theme.Multi2.Translucent" />
+
+        <!-- ============ PROXY STUB PROCESSES (p0..p9, expand to p499 in M2) ============ -->
+
+        <activity android:name=".proxy.AssistActivity$P0" android:exported="true" android:process=":proxy.p0" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P0" android:authorities="com.multi2.app:ProxyProvider.p0" android:exported="true" android:process=":proxy.p0" />
+        <activity android:name=".proxy.AssistActivity$P1" android:exported="true" android:process=":proxy.p1" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P1" android:authorities="com.multi2.app:ProxyProvider.p1" android:exported="true" android:process=":proxy.p1" />
+        <activity android:name=".proxy.AssistActivity$P2" android:exported="true" android:process=":proxy.p2" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P2" android:authorities="com.multi2.app:ProxyProvider.p2" android:exported="true" android:process=":proxy.p2" />
+        <activity android:name=".proxy.AssistActivity$P3" android:exported="true" android:process=":proxy.p3" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P3" android:authorities="com.multi2.app:ProxyProvider.p3" android:exported="true" android:process=":proxy.p3" />
+        <activity android:name=".proxy.AssistActivity$P4" android:exported="true" android:process=":proxy.p4" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P4" android:authorities="com.multi2.app:ProxyProvider.p4" android:exported="true" android:process=":proxy.p4" />
+        <activity android:name=".proxy.AssistActivity$P5" android:exported="true" android:process=":proxy.p5" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P5" android:authorities="com.multi2.app:ProxyProvider.p5" android:exported="true" android:process=":proxy.p5" />
+        <activity android:name=".proxy.AssistActivity$P6" android:exported="true" android:process=":proxy.p6" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P6" android:authorities="com.multi2.app:ProxyProvider.p6" android:exported="true" android:process=":proxy.p6" />
+        <activity android:name=".proxy.AssistActivity$P7" android:exported="true" android:process=":proxy.p7" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P7" android:authorities="com.multi2.app:ProxyProvider.p7" android:exported="true" android:process=":proxy.p7" />
+        <activity android:name=".proxy.AssistActivity$P8" android:exported="true" android:process=":proxy.p8" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P8" android:authorities="com.multi2.app:ProxyProvider.p8" android:exported="true" android:process=":proxy.p8" />
+        <activity android:name=".proxy.AssistActivity$P9" android:exported="true" android:process=":proxy.p9" android:screenOrientation="behind" android:taskAffinity="com.multi2.app.vt" android:theme="@style/Theme.Multi2.Translucent" />
+        <provider android:name=".proxy.ProxyProvider$P9" android:authorities="com.multi2.app:ProxyProvider.p9" android:exported="true" android:process=":proxy.p9" />
+
+    </application>
+</manifest>

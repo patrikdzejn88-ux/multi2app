@@ -28,6 +28,7 @@ object Routes {
     const val VIRTUAL_DEVICE_INFO = "vinfo"
     const val LOCK = "lock"
     const val PRIVATE_SPACE = "private_space"
+    const val PROXY = "proxy"                       // NEW: proxy manager (not in original)
 
     fun appDetail(pkg: String, userId: Int) = "detail/$pkg/$userId"
     fun launch(pkg: String, userId: Int) = "launch/$pkg/$userId"

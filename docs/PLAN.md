@@ -19,12 +19,16 @@ functionally equivalent virtualization on an open engine core.
 Gradle project, manifest skeleton (processes, permissions, router scheme),
 Compose theme ("Multi2 Blue" ≈ Moon.Blue), app class, placeholder home.
 
-### M1 — Home & navigation
-Routes mirroring `moon://main.router.ma/*` → `multi2://main.router/*`:
-launcher (space cards grid), apps (import list), appDetail, setting, buyVip,
-freeVip, codeRedeem, vipRebind, language, memory, storage, spaceFolder,
-fileTransfer, virtualDeviceInfo, about, lock, privateSpace, choice.
-Drawer with Account/General/Tool groups. All strings 1:1 (EN base).
+### M1 — Home & navigation  [DONE core]
+Routes mirroring `moon://main.router.ma/*` → `multi2://main.router/*`.
+DONE: Room (spaces/cloned_apps/proxies), DataStore settings, MVVM+Hilt,
+Home (real space cards, rename/delete, hidden filter), Import Apps
+(search/select/clone dialog with 2-space free limit), App Detail (local
+options persisted, engine actions stubbed), Settings (battery opt intent,
+night mode Auto/Dark/Light, vibrator, hidden apps, marquee, dev-mode 3-tap),
+NEW Proxy manager (SOCKS5/HTTP(S), per-space scope, TCP test), night-mode
+theme wiring. TODO later: about, memory, storage, fileTransfer, lock,
+privateSpace, buyVip screens.
 
 ### M2 — Engine integration
 Open VirtualApp-family core (BlackBoxCore-class) as `engine/` module:

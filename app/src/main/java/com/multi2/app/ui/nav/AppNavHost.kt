@@ -6,8 +6,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.multi2.app.ui.appdetail.AppDetailScreen
+import com.multi2.app.ui.apps.AppsScreen
 import com.multi2.app.ui.home.HomeScreen
+import com.multi2.app.ui.proxy.ProxyScreen
 import com.multi2.app.ui.screens.PlaceholderScreen
+import com.multi2.app.ui.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -15,24 +19,29 @@ fun AppNavHost(navController: NavHostController) {
         composable(Routes.LAUNCHER) {
             HomeScreen(
                 onOpenApps = { navController.navigate(Routes.APPS) },
-                onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onOpenRoute = { route -> navController.navigate(route) },
+                onOpenApp = { pkg, spaceId -> navController.navigate(Routes.appDetail(pkg, spaceId)) },
             )
         }
-        composable(Routes.APPS) { PlaceholderScreen("Import Apps") }
-        composable(Routes.CHOICE) { PlaceholderScreen("Choose apps") }
+        composable(Routes.APPS) {
+            AppsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.SETTINGS) {
+            SettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.PROXY) {
+            ProxyScreen(onBack = { navController.popBackStack() })
+        }
         composable(
             route = Routes.APP_DETAIL,
             arguments = listOf(
                 navArgument("pkg") { type = NavType.StringType },
                 navArgument("userId") { type = NavType.IntType },
             ),
-        ) { entry ->
-            PlaceholderScreen(
-                "App Detail\n${entry.arguments?.getString("pkg")} (user ${entry.arguments?.getInt("userId")})",
-            )
+        ) {
+            AppDetailScreen(onBack = { navController.popBackStack() })
         }
-        composable(Routes.SETTINGS) { PlaceholderScreen("Settings") }
+        composable(Routes.CHOICE) { PlaceholderScreen("Choose apps") }
         composable(Routes.ABOUT) { PlaceholderScreen("About us") }
         composable(Routes.BUY_VIP) { PlaceholderScreen("Buy VIP") }
         composable(Routes.FREE_VIP) { PlaceholderScreen("Free VIP") }

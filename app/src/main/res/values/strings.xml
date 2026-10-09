@@ -67,6 +67,72 @@
     <string name="drawer_find_help">Find Help</string>
     <string name="drawer_share_app">Share app with friends</string>
 
+    <!-- clone dialog -->
+    <string name="apps_clone_dialog_title">Please select the number of virtual spaces where you want to install:</string>
+    <string name="apps_clone_dialog_vip_tip">Only premium VIP users can clone more than two spaces.</string>
+
+    <!-- space card -->
+    <string name="space_apps_count">%1$d app(s)</string>
+    <string name="space_card_menu_install">Import Apps</string>
+    <string name="space_card_menu_rename_space">Edit Title</string>
+    <string name="space_card_menu_rename_holder">Input new title</string>
+
+    <!-- app detail -->
+    <string name="app_detail_title">App Detail</string>
+    <string name="app_detail_pkg">pkg: %1$s</string>
+    <string name="app_detail_open">Open</string>
+    <string name="app_stop">Stop</string>
+    <string name="app_detail_fix">Fix</string>
+    <string name="app_detail_fix_shortcut">Shortcut</string>
+    <string name="app_detail_export_data">Export</string>
+    <string name="app_detail_virtual_id">Device ID</string>
+    <string name="app_detail_hidden_app">Hidden App</string>
+    <string name="app_detail_traceable">Support GG</string>
+    <string name="app_detail_google_installer">Enable google installer</string>
+    <string name="hook_virtual_sdcard">Use virtual sdcard</string>
+    <string name="hook_hide_dev_mode">Hide developer mode</string>
+    <string name="hook_deny_read_host_apps">Disable Read phone\'s apps</string>
+    <string name="app_detail_app_fake">App Fake</string>
+    <string name="app_detail_uninstall">Uninstall</string>
+    <string name="label_def">Label</string>
+    <string name="dialog_message_uninstall">Are you sure you want to uninstall the app?</string>
+
+    <!-- settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_battery_optimize">Ignore Battery Optimization</string>
+    <string name="settings_battery_optimize_description">Disable background power saving limits to keep your cloned app connectivity stable and prevent unexpected offline issues.</string>
+    <string name="settings_keep_alive">App Keep-Alive</string>
+    <string name="settings_keep_alive_description">Effectively prevents the system from terminating the cloned app which is running</string>
+    <string name="settings_developer_test">Developer Options</string>
+    <string name="settings_developer_test_description">Only used for developer local test</string>
+    <string name="appearance_night_mode">Night mode</string>
+    <string name="appearance_night_mode_auto">Auto</string>
+    <string name="appearance_night_mode_dark">Dark</string>
+    <string name="appearance_night_mode_light">Light</string>
+    <string name="appearance_night_mode_auto_description">Follow System</string>
+    <string name="appearance_night_mode_dark_description">Only dark colors</string>
+    <string name="appearance_night_mode_light_description">Only light colors</string>
+    <string name="appearance_marquee_border">Marquee Border</string>
+    <string name="appearance_marquee_border_description">Dynamic color for space card border</string>
+    <string name="about_version">Version</string>
+
+    <!-- proxy (NEW feature, not in original) -->
+    <string name="drawer_proxy">Proxy</string>
+    <string name="proxy_title">Proxy</string>
+    <string name="proxy_empty">No proxies yet. Tap + to add one.</string>
+    <string name="proxy_add">Add proxy</string>
+    <string name="proxy_edit">Edit proxy</string>
+    <string name="proxy_test">Test</string>
+    <string name="proxy_name">Name</string>
+    <string name="proxy_protocol">Protocol</string>
+    <string name="proxy_host">Host</string>
+    <string name="proxy_port">Port</string>
+    <string name="proxy_username">Username (optional)</string>
+    <string name="proxy_password">Password (optional)</string>
+    <string name="proxy_scope">Apply to</string>
+    <string name="proxy_scope_global">All spaces (default)</string>
+    <string name="proxy_scope_space">Space: %1$s</string>
+
     <!-- common -->
     <string name="btn_cancel">Cancel</string>
     <string name="btn_ok">OK</string>

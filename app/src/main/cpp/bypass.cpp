@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <android/log.h>
 #include <dlfcn.h>
+#include <cstdio>
 #include <cstring>
 
 #define LOG_TAG "Multi2Bypass"

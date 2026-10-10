@@ -113,7 +113,12 @@ object GuestActivityLauncher {
             pm.getActivityInfo(component, 0).targetActivity
         }.getOrNull()
 
-    /** Probe and invoke the API-level-correct Activity.attach signature. */
+    /**
+     * Activity.attach via signature discovery, not hardcoded variants.
+     * The method is unique per runtime; arguments are mapped by parameter
+     * TYPE, so every API level works — including API 35's 20-param variant
+     * (…, MultiWindowModeController, boolean shouldDockBigOverlays).
+     */
     private fun attachActivity(
         stub: Activity,
         activity: Activity,
@@ -121,129 +126,92 @@ object GuestActivityLauncher {
         activityClassName: String,
         spaceId: Int,
     ) {
-        val instrumentation = Instrumentation()
-        val token = android.os.Binder()
-        val app = guest.application ?: stub.application
-        val intent = Intent().setComponent(ComponentName(guest.pkg, activityClassName))
+        val pkg = guest.pkg
         val appInfo = ApplicationInfo().apply {
-            packageName = guest.pkg
-            sourceDir = EnginePaths.apkDir(stub, spaceId, guest.pkg).absolutePath + "/base.apk"
+            packageName = pkg
+            sourceDir = EnginePaths.apkDir(stub, spaceId, pkg).absolutePath + "/base.apk"
             publicSourceDir = sourceDir
-            dataDir = EnginePaths.dataDir(stub, spaceId, guest.pkg).absolutePath
+            dataDir = EnginePaths.dataDir(stub, spaceId, pkg).absolutePath
         }
-        val info = ActivityInfo().apply {
-            packageName = guest.pkg
-            name = activityClassName
+        // Real ActivityInfo (theme, softInput, launchMode...) — guests crash
+        // without their own theme (AppCompat) right after attach.
+        val info = resolveActivityInfo(stub, pkg, spaceId, activityClassName).apply {
             applicationInfo = appInfo
         }
         val guestContext = GuestContext(
-            stub, guest.pkg, spaceId, guest.classLoader, guest.resources, appInfo,
+            stub, pkg, spaceId, guest.classLoader, guest.resources, appInfo,
         )
 
-        val activityThread = Class.forName("android.app.ActivityThread")
-        val ncInstances = Class.forName("android.app.Activity\$NonConfigurationInstances")
-        val voiceInteractor = Class.forName("com.android.internal.app.IVoiceInteractor")
-        val configCallback = runCatching {
-            Class.forName("android.view.ViewRootImpl\$ActivityConfigCallback")
+        val instrumentation = Instrumentation()
+        val token: IBinder = android.os.Binder()
+        val app = guest.application ?: stub.application
+        val intent = Intent().setComponent(ComponentName(pkg, activityClassName))
+        val activityThread = runCatching {
+            Class.forName("android.app.ActivityThread")
+                .getDeclaredMethod("currentActivityThread")
+                .invoke(null)
         }.getOrNull()
 
-        val signatures = buildList<Array<Class<*>>> {
-            // API 31–35: 18 params (IBinder token, IBinder assistToken, …, callback, IBinder shareableToken)
-            if (configCallback != null) {
-                add(
-                    arrayOf(
-                        Context::class.java, activityThread, Instrumentation::class.java,
-                        IBinder::class.java, IBinder::class.java,
-                        android.app.Application::class.java, Intent::class.java, ActivityInfo::class.java,
-                        CharSequence::class.java, Activity::class.java, String::class.java,
-                        ncInstances, android.content.res.Configuration::class.java, String::class.java,
-                        voiceInteractor, android.view.Window::class.java, configCallback, IBinder::class.java,
-                    ),
-                )
-                // API 30: 17 params (no shareable token)
-                add(
-                    arrayOf(
-                        Context::class.java, activityThread, Instrumentation::class.java,
-                        IBinder::class.java, IBinder::class.java,
-                        android.app.Application::class.java, Intent::class.java, ActivityInfo::class.java,
-                        CharSequence::class.java, Activity::class.java, String::class.java,
-                        ncInstances, android.content.res.Configuration::class.java, String::class.java,
-                        voiceInteractor, android.view.Window::class.java, configCallback,
-                    ),
-                )
-                // API 28–29: 16 params (int ident)
-                add(
-                    arrayOf(
-                        Context::class.java, activityThread, Instrumentation::class.java,
-                        IBinder::class.java, Int::class.javaPrimitiveType!!,
-                        android.app.Application::class.java, Intent::class.java, ActivityInfo::class.java,
-                        CharSequence::class.java, Activity::class.java, String::class.java,
-                        ncInstances, android.content.res.Configuration::class.java, String::class.java,
-                        voiceInteractor, android.view.Window::class.java, configCallback,
-                    ),
-                )
-            }
-            // API 26–27: 15 params (no config callback)
-            add(
-                arrayOf(
-                    Context::class.java, activityThread, Instrumentation::class.java,
-                    IBinder::class.java, Int::class.javaPrimitiveType!!,
-                    android.app.Application::class.java, Intent::class.java, ActivityInfo::class.java,
-                    CharSequence::class.java, Activity::class.java, String::class.java,
-                    ncInstances, android.content.res.Configuration::class.java, String::class.java,
-                    voiceInteractor, android.view.Window::class.java,
-                ),
-            )
-        }
+        val method = Activity::class.java.declaredMethods
+            .firstOrNull { it.name == "attach" }
+            ?: throw IllegalStateException("Activity.attach method not found")
+        method.isAccessible = true
 
-        var lastError: Throwable? = null
-        for (sig in signatures) {
-            try {
-                val method = Activity::class.java.getDeclaredMethod("attach", *sig)
-                method.isAccessible = true
-                val args = buildArgs(sig.size, stub, instrumentation, token, app, intent, info, guestContext)
-                method.invoke(activity, *args)
-                return
-            } catch (t: Throwable) {
-                lastError = t
+        val params = method.parameterTypes
+        val args = arrayOfNulls<Any?>(params.size)
+        var stringIndex = 0
+        params.forEachIndexed { i, t ->
+            args[i] = when {
+                i == 0 && Context::class.java.isAssignableFrom(t) -> guestContext
+                t.name == "android.app.ActivityThread" -> activityThread
+                t == Instrumentation::class.java -> instrumentation
+                t == IBinder::class.java -> token
+                t == java.lang.Integer.TYPE -> 0
+                t == java.lang.Boolean.TYPE -> false
+                t == android.app.Application::class.java -> app
+                t == Intent::class.java -> intent
+                t == ActivityInfo::class.java -> info
+                t == CharSequence::class.java -> info.name
+                t == Activity::class.java -> stub
+                t == String::class.java -> {
+                    stringIndex++
+                    // first String = embedded id, second = referrer
+                    if (stringIndex == 1) "multi2" else stub.packageName
+                }
+                t == android.content.res.Configuration::class.java -> stub.resources.configuration
+                // NonConfigurationInstances / IVoiceInteractor / Window /
+                // ActivityConfigCallback / shareable token extras / unknown
+                else -> null
             }
         }
-        throw IllegalStateException("Activity.attach failed on API ${Build.VERSION.SDK_INT}: ${lastError?.message}")
+        method.invoke(activity, *args)
     }
 
-    private fun buildArgs(
-        count: Int,
-        stub: Activity,
-        instrumentation: Instrumentation,
-        token: IBinder,
-        app: android.app.Application,
-        intent: Intent,
-        info: ActivityInfo,
-        guestContext: Context,
-    ): Array<Any?> {
-        val args = arrayOfNulls<Any?>(count)
-        for (i in 0 until count) {
-            args[i] = when (i) {
-                0 -> guestContext
-                1 -> null // ActivityThread
-                2 -> instrumentation
-                3 -> token
-                4 -> if (count >= 17) token else 0 // API30+: IBinder assistToken; older: int ident
-                5 -> app
-                6 -> intent
-                7 -> info
-                8 -> info.name
-                9 -> stub // parent
-                10 -> "multi2" // embedded id
-                11 -> null // NonConfigurationInstances
-                12 -> stub.resources.configuration
-                13 -> stub.packageName // referrer
-                14 -> null // IVoiceInteractor
-                15 -> null // Window — attach creates it
-                else -> null // config callback / shareable token
-            }
+    /** Full ActivityInfo from the host PM (or archive), for real theme/flags. */
+    private fun resolveActivityInfo(
+        context: Context,
+        pkg: String,
+        spaceId: Int,
+        className: String,
+    ): ActivityInfo {
+        runCatching {
+            @Suppress("DEPRECATION")
+            context.packageManager.getActivityInfo(ComponentName(pkg, className), 0)
+        }.getOrNull()?.let { return it }
+
+        val baseApk = EnginePaths.apkDir(context, spaceId, pkg).absolutePath + "/base.apk"
+        val flags = PackageManager.GET_ACTIVITIES.toLong()
+        val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.getPackageArchiveInfo(baseApk, PackageManager.PackageInfoFlags.of(flags))
+        } else {
+            @Suppress("DEPRECATION")
+            context.packageManager.getPackageArchiveInfo(baseApk, flags.toInt())
         }
-        return args
+        return info?.activities?.firstOrNull { it.name == className }
+            ?: ActivityInfo().apply {
+                packageName = pkg
+                name = className
+            }
     }
 
     private fun callOnCreate(activity: Activity) {

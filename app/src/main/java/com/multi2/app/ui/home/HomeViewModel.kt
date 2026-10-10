@@ -26,8 +26,11 @@ data class SpaceUiModel(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val spaceRepository: SpaceRepository,
-    settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+
+    val settings = settingsRepository.settings
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val showHidden = settingsRepository.settings
         .map { it.showHiddenApps }
@@ -35,7 +38,7 @@ class HomeViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val spaces: StateFlow<List<SpaceUiModel>> =
-        combine(spaceRepository.spaces, showHidden) { list, showHidden -> list to showHidden }
+        combine(spaceRepository.publicSpaces, showHidden) { list, showHidden -> list to showHidden }
             .flatMapLatest { (list, show) ->
                 if (list.isEmpty()) {
                     kotlinx.coroutines.flow.flowOf(emptyList())
@@ -69,6 +72,10 @@ class HomeViewModel @Inject constructor(
 
     fun renameSpace(spaceId: Int, newTitle: String) {
         viewModelScope.launch { spaceRepository.renameSpace(spaceId, newTitle) }
+    }
+
+    fun acceptPrivacy() {
+        viewModelScope.launch { settingsRepository.setPrivacyAccepted() }
     }
 
     fun deleteSpace(spaceId: Int) {

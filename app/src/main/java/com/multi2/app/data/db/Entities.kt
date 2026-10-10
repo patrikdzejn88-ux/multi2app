@@ -10,6 +10,7 @@ data class SpaceEntity(
     val title: String,
     val createdAt: Long = System.currentTimeMillis(),
     val locked: Boolean = false,
+    val isPrivate: Boolean = false,   // private space (hidden behind pattern lock)
     val sortOrder: Int = 0,
 )
 

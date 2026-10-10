@@ -19,7 +19,7 @@ class CloneLauncher @Inject constructor(
     private val spaceRepository: SpaceRepository,
 ) {
     companion object {
-        const val MAX_SLOTS = 10 // p0..p9 (expand to 500 in M6 manifest generation)
+        const val MAX_SLOTS = 500 // p0..p499, parity with the original
         const val EXTRA_PKG = "com.multi2.extra.PKG"
         const val EXTRA_SPACE = "com.multi2.extra.SPACE_ID"
         const val EXTRA_SLOT = "com.multi2.extra.SLOT"
@@ -32,7 +32,13 @@ class CloneLauncher @Inject constructor(
         val slot = (0 until MAX_SLOTS).firstOrNull { it !in used } ?: return -1
         spaceRepository.assignSlot(pkg, spaceId, slot)
 
-        val stubClass = Class.forName("com.multi2.app.proxy.AssistActivity\$P$slot")
+        // p0..p9 are nested classes (AssistActivity$Pn); p10..p499 generated top-level
+        val stubName = if (slot < 10) {
+            "com.multi2.app.proxy.AssistActivity\$P$slot"
+        } else {
+            "com.multi2.app.proxy.StubActivityP$slot"
+        }
+        val stubClass = Class.forName(stubName)
         val intent = Intent(context, stubClass).apply {
             putExtra(EXTRA_PKG, pkg)
             putExtra(EXTRA_SPACE, spaceId)

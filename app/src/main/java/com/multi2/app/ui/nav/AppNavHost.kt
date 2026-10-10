@@ -13,10 +13,12 @@ import com.multi2.app.ui.deviceinfo.VirtualDeviceInfoScreen
 import com.multi2.app.ui.home.HomeScreen
 import com.multi2.app.ui.language.LanguageScreen
 import com.multi2.app.ui.memory.MemoryScreen
+import com.multi2.app.ui.privatespace.PrivateSpaceScreen
 import com.multi2.app.ui.proxy.ProxyScreen
 import com.multi2.app.ui.screens.PlaceholderScreen
 import com.multi2.app.ui.settings.SettingsScreen
 import com.multi2.app.ui.storage.StorageScreen
+import com.multi2.app.ui.transfer.FileTransferScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -58,11 +60,18 @@ fun AppNavHost(navController: NavHostController) {
         ) {
             VirtualDeviceInfoScreen(onBack = { navController.popBackStack() })
         }
+        composable(Routes.PRIVATE_SPACE) {
+            PrivateSpaceScreen(
+                onBack = { navController.popBackStack() },
+                onOpenApp = { pkg, spaceId -> navController.navigate(Routes.appDetail(pkg, spaceId)) },
+            )
+        }
+        composable(Routes.FILE_TRANSFER) {
+            FileTransferScreen(onBack = { navController.popBackStack() })
+        }
         // M5 remainder
         composable(Routes.CHOICE) { PlaceholderScreen("Choose apps") }
         composable(Routes.SPACE_FOLDER) { PlaceholderScreen("Space Folder") }
-        composable(Routes.FILE_TRANSFER) { PlaceholderScreen("File Transfer") }
         composable(Routes.LOCK) { PlaceholderScreen("Set a lock") }
-        composable(Routes.PRIVATE_SPACE) { PlaceholderScreen("Private Space") }
     }
 }

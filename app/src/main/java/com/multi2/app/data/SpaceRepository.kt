@@ -15,6 +15,9 @@ class SpaceRepository @Inject constructor(
 ) {
     val spaces: Flow<List<SpaceEntity>> = spaceDao.observeAll()
 
+    /** Home shows only public spaces; private space lives behind the lock. */
+    val publicSpaces: Flow<List<SpaceEntity>> = spaceDao.observePublic()
+
     /** First-run: create "Virtual Space-1" like the original does. */
     suspend fun ensureDefaultSpace() {
         if (spaceDao.count() == 0) {
@@ -24,6 +27,15 @@ class SpaceRepository @Inject constructor(
 
     suspend fun createSpace(title: String, sortOrder: Int): Long =
         spaceDao.insert(SpaceEntity(title = title, sortOrder = sortOrder))
+
+    /** Private space is a singleton — returns its id, creating it on first use. */
+    suspend fun ensurePrivateSpace(): Int {
+        val existing = spaceDao.privateSpace()
+        if (existing != null) return existing.id
+        return spaceDao.insert(
+            SpaceEntity(title = "Private Space", isPrivate = true, sortOrder = -1),
+        ).toInt()
+    }
 
     suspend fun renameSpace(spaceId: Int, newTitle: String) {
         spaceDao.byId(spaceId)?.let { spaceDao.update(it.copy(title = newTitle)) }
@@ -38,6 +50,9 @@ class SpaceRepository @Inject constructor(
 
     fun appsOfSpace(spaceId: Int): Flow<List<ClonedAppEntity>> =
         clonedAppDao.observeOfSpace(spaceId)
+
+    suspend fun appsOfSpaceOnce(spaceId: Int): List<ClonedAppEntity> =
+        clonedAppDao.getOfSpace(spaceId)
 
     fun app(pkg: String, spaceId: Int): Flow<ClonedAppEntity?> =
         clonedAppDao.observeOne(pkg, spaceId)

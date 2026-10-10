@@ -24,6 +24,7 @@ data class AppSettings(
     val marqueeBorder: Boolean = false,
     val developerMode: Boolean = false,
     val language: String = "system",
+    val privacyAccepted: Boolean = false,
 )
 
 @Singleton
@@ -38,6 +39,7 @@ class SettingsRepository @Inject constructor(
         val MARQUEE = booleanPreferencesKey("marquee_border")
         val DEV_MODE = booleanPreferencesKey("developer_mode")
         val LANGUAGE = stringPreferencesKey("language")
+        val PRIVACY_ACCEPTED = booleanPreferencesKey("privacy_accepted")
     }
 
     val settings: Flow<AppSettings> = context.settingsStore.data.map { p ->
@@ -50,7 +52,12 @@ class SettingsRepository @Inject constructor(
             marqueeBorder = p[Keys.MARQUEE] ?: false,
             developerMode = p[Keys.DEV_MODE] ?: false,
             language = p[Keys.LANGUAGE] ?: "system",
+            privacyAccepted = p[Keys.PRIVACY_ACCEPTED] ?: false,
         )
+    }
+
+    suspend fun setPrivacyAccepted() {
+        context.settingsStore.edit { it[Keys.PRIVACY_ACCEPTED] = true }
     }
 
     suspend fun setLanguage(tag: String) {

@@ -106,6 +106,41 @@
     <string name="virtual_id_reset_message">The system provide a virtual lD(likely as device id, wifi mac) to installed apps. You can reset a virtual ID to prevent app from tracking your behavior and preferences and protect your privacy. If you reset it now, your app data might be lost or become unusable. Reset virtual ID anyway?</string>
     <string name="virtual_device_info_reset_btn">Reset</string>
     <string name="vinfo_copy">Copy</string>
+
+    <!-- private space / pattern lock -->
+    <string name="private_space_education_title">About private space</string>
+    <string name="private_space_hide_apps_summary">Hide or lock private apps in a separate space. Additionally, you can uninstall the app from your phone after installation, which will not affect the normal operation of the app in the private space.</string>
+    <string name="private_space_install_apps_text"><b>Install apps</b>"\nInstall apps that you want to keep private in your space"</string>
+    <string name="lockpattern_choose_header">Set a pattern</string>
+    <string name="lockpattern_confirm_header">Confirm your pattern</string>
+    <string name="lockpattern_confirm_generic">Draw your pattern to continue</string>
+    <string name="lockpattern_setting_step_touch">"Lift your point finger when you're done."</string>
+    <string name="lockpattern_too_short">Connect at least four dots. Try again.</string>
+    <string name="lockpattern_wrong">Wrong pattern</string>
+    <string name="lockpattern_need_to_confirm">Draw pattern again to confirm</string>
+    <string name="lockpattern_retry_button_text">Clear</string>
+    <string name="lockpattern_record_success">You have successfully set the pattern key.</string>
+
+    <!-- file transfer -->
+    <string name="file_trans_title">File Transfer</string>
+    <string name="file_trans_send">Send</string>
+    <string name="file_trans_receive">Receive</string>
+    <string name="file_trans_code_hint">192.168.1.10:54321</string>
+    <string name="file_trans_start">Start transmission</string>
+    <string name="file_trans_waiting">Waiting to receive files</string>
+    <string name="file_trans_connect_target_device">Linking to the target device</string>
+    <string name="file_trans_same_network_hint">Please ensure the devices are connected to the same WiFi or hotspot network.</string>
+    <string name="file_trans_sending">Sending %1$d%%</string>
+    <string name="file_trans_receiving">Receiving %1$d%%</string>
+    <string name="file_trans_complete">Transfer complete</string>
+    <string name="file_trans_failed">Transfer interrupted</string>
+    <string name="file_trans_empty_tip">No apps available for transfer!</string>
+
+    <!-- onboarding privacy -->
+    <string name="privacy_dialog_title">Privacy Tips</string>
+    <string name="privacy_dialog_message">To provide you with a list of the apps on your device that can be cloned, we need to read your installed applications list. All data stays on your device and is never shared with third parties. Tap Agree and Continue to accept the Terms of Service.</string>
+    <string name="privacy_positive">Agree and Continue</string>
+    <string name="privacy_negative">Decline</string>
     <string name="label_def">Label</string>
     <string name="dialog_message_uninstall">Are you sure you want to uninstall the app?</string>
 

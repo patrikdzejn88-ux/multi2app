@@ -46,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,6 +71,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val spaces by viewModel.spaces.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var renamingSpace by remember { mutableStateOf<SpaceUiModel?>(null) }
@@ -222,6 +224,26 @@ fun HomeScreen(
             dismissButton = {
                 TextButton(onClick = { deletingSpace = null }) {
                     Text(stringResource(R.string.btn_cancel))
+                }
+            },
+        )
+    }
+
+    // First-launch privacy dialog — parity with the original's Privacy Tips
+    val activity = LocalContext.current as? android.app.Activity
+    if (settings?.privacyAccepted == false) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(stringResource(R.string.privacy_dialog_title)) },
+            text = { Text(stringResource(R.string.privacy_dialog_message)) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.acceptPrivacy() }) {
+                    Text(stringResource(R.string.privacy_positive))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { activity?.finish() }) {
+                    Text(stringResource(R.string.privacy_negative))
                 }
             },
         )

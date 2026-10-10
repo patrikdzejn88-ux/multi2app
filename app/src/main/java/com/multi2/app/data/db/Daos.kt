@@ -19,6 +19,12 @@ interface SpaceDao {
     @Query("SELECT * FROM spaces WHERE id = :id")
     suspend fun byId(id: Int): SpaceEntity?
 
+    @Query("SELECT * FROM spaces WHERE isPrivate = 1 LIMIT 1")
+    suspend fun privateSpace(): SpaceEntity?
+
+    @Query("SELECT * FROM spaces WHERE isPrivate = 0 ORDER BY sortOrder, id")
+    fun observePublic(): Flow<List<SpaceEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(space: SpaceEntity): Long
 
@@ -36,6 +42,9 @@ interface SpaceDao {
 interface ClonedAppDao {
     @Query("SELECT * FROM cloned_apps WHERE spaceId = :spaceId ORDER BY pinned DESC, label")
     fun observeOfSpace(spaceId: Int): Flow<List<ClonedAppEntity>>
+
+    @Query("SELECT * FROM cloned_apps WHERE spaceId = :spaceId ORDER BY pinned DESC, label")
+    suspend fun getOfSpace(spaceId: Int): List<ClonedAppEntity>
 
     @Query("SELECT * FROM cloned_apps WHERE pkg = :pkg AND spaceId = :spaceId")
     fun observeOne(pkg: String, spaceId: Int): Flow<ClonedAppEntity?>

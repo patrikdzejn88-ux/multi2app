@@ -14,8 +14,14 @@ workflows:
     scripts:
       - name: Install NDK + CMake
         script: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "ndk;26.1.10909125" "cmake;3.22.1"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_HOME/tools/bin/sdkmanager"
+          [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKMANAGER" ] || SDKMANAGER="$(command -v sdkmanager)"
+          echo "sdkmanager: $SDKMANAGER"
+          echo "ANDROID_HOME=$ANDROID_HOME"; ls "$ANDROID_HOME" || true
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "ndk;26.1.10909125" "cmake;3.22.1"
       - name: Generate Gradle wrapper
         script: gradle wrapper --gradle-version 8.10.2 --distribution-type bin
       - name: Build APK (release)

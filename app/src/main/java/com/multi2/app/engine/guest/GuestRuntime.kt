@@ -10,6 +10,7 @@ import android.content.res.Resources
 import android.database.MatrixCursor
 import android.os.Build
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.util.Log
 import com.multi2.app.engine.EnginePaths
 import com.multi2.app.engine.HiddenApiBypass
@@ -169,37 +170,31 @@ class SpoofedContentResolver(
     private fun isAndroidIdUri(uri: android.net.Uri): Boolean =
         uri.authority == "settings" && uri.lastPathSegment == "android_id"
 
+    // ContentResolver's public query()/call() are final; they delegate into
+    // these two open methods — the correct interception points.
     override fun query(
         uri: android.net.Uri,
         projection: Array<out String>?,
-        selection: String?,
-        selectionArgs: Array<out String>?,
-        sortOrder: String?,
+        queryArgs: Bundle?,
+        cancellationSignal: CancellationSignal?,
     ): android.database.Cursor? {
         if (isAndroidIdUri(uri)) {
             return MatrixCursor(arrayOf("name", "value")).apply {
                 addRow(arrayOf("android_id", virtualDevice.androidId))
             }
         }
-        return wrapped.query(uri, projection, selection, selectionArgs, sortOrder)
+        return wrapped.query(uri, projection, queryArgs, cancellationSignal)
     }
 
-    override fun call(uri: android.net.Uri, method: String, arg: String?, extras: Bundle?): Bundle? {
-        if (uri.authority == "settings" && "android_id" == arg) {
+    override fun call(authority: String, method: String, arg: String?, extras: Bundle?): Bundle? {
+        if (authority == "settings" && "android_id" == arg) {
             return Bundle().apply { putString("value", virtualDevice.androidId) }
         }
-        return wrapped.call(uri, method, arg, extras)
+        return if (Build.VERSION.SDK_INT >= 29) {
+            wrapped.call(authority, method, arg, extras)
+        } else {
+            @Suppress("DEPRECATION")
+            wrapped.call(android.net.Uri.parse("content://$authority"), method, arg, extras)
+        }
     }
-
-    override fun getType(uri: android.net.Uri): String? = wrapped.getType(uri)
-    override fun insert(uri: android.net.Uri, values: android.content.ContentValues?): android.net.Uri? =
-        wrapped.insert(uri, values)
-    override fun delete(uri: android.net.Uri, selection: String?, selectionArgs: Array<out String>?): Int =
-        wrapped.delete(uri, selection, selectionArgs)
-    override fun update(
-        uri: android.net.Uri,
-        values: android.content.ContentValues?,
-        selection: String?,
-        selectionArgs: Array<out String>?,
-    ): Int = wrapped.update(uri, values, selection, selectionArgs)
 }

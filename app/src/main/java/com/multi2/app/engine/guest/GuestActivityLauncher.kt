@@ -159,9 +159,20 @@ object GuestActivityLauncher {
         val method = com.multi2.app.engine.HiddenApiBypass
             .findHiddenMethod(Activity::class.java, "attach")
             ?: throw IllegalStateException(
-                "Activity.attach not found (bypass=${com.multi2.app.engine.HiddenApiBypass.applied}, " +
-                    "err=${com.multi2.app.engine.HiddenApiBypass.lastError}, " +
-                    "declared=${runCatching { Activity::class.java.declaredMethods.size }.getOrDefault(-1)})",
+                buildString {
+                    append("Activity.attach not found. bypass=")
+                    append(com.multi2.app.engine.HiddenApiBypass.applied)
+                    append(" | ")
+                    append(com.multi2.app.engine.HiddenApiBypass.lastError)
+                    append(" | visible=")
+                    append(
+                        runCatching {
+                            Activity::class.java.declaredMethods
+                                .take(6).joinToString(",") { it.name } +
+                                " (total ${Activity::class.java.declaredMethods.size})"
+                        }.getOrDefault("err"),
+                    )
+                },
             )
         method.isAccessible = true
 

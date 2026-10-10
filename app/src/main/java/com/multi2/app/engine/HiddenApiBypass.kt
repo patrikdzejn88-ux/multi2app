@@ -3,17 +3,15 @@ package com.multi2.app.engine
 import android.util.Log
 
 /**
- * Hidden API bypass via meta-reflection (pure Java, no native).
- *
- * Technique (public, used by LSPosed's HiddenApiBypass and cloner engines):
- *  1. Class.getDeclaredMethod IS an SDK-visible member — reflection on it is legal.
- *  2. Through it we obtain VMRuntime.getRuntime().setHiddenApiExemptions(String[])
- *     without the enforcement engine seeing a "hidden reflection" call site.
- *  3. Exempting "L" whitelists every hidden API (needed for Activity/Application
- *     attach, Instrumentation, AssetManager.addAssetPath in the guest runtime).
- *
- * The original performs the equivalent inside libma2023.so (native).
- * Works API 28–35; no-op (returns true) below 28.
+ * Hidden API bypass — layered, like the original's libma2023.so:
+ *  1. NATIVE (bypass.cpp): JNI setHiddenApiExemptions, then direct
+ *     art::Runtime::SetHiddenApiEnforcementPolicy(kDisabled) via dlsym on
+ *     libart.so — unrestricted by Java filtering and by the hardened
+ *     Java entry point on Android 15.
+ *  2. Meta-reflection: get VMRuntime.setHiddenApiExemptions through
+ *     reflected Class.getDeclaredMethod (works on API 28–34 stock).
+ *  3. findHiddenMethod meta-lookup as the last-resort member resolver.
+ * Works API 28–35+; no-op below 28.
  */
 object HiddenApiBypass {
 
@@ -32,16 +30,22 @@ object HiddenApiBypass {
 
     /** JNI bypass — not subject to Java hidden-API filtering (API 15-safe). */
     private external fun nativeApplyHiddenApiBypass(): Boolean
+    private external fun nativeGetLastError(): String
+
+    @Volatile
+    private var nativeDetail: String = "not run"
 
     private fun applyNative(): Boolean {
         if (nativeTried) return false
         nativeTried = true
         return runCatching {
             System.loadLibrary("multi2bypass")
-            nativeApplyHiddenApiBypass()
+            val ok = nativeApplyHiddenApiBypass()
+            nativeDetail = if (ok) "ok" else nativeGetLastError()
+            ok
         }.getOrElse {
-            lastError = "native: ${it.javaClass.simpleName}: ${it.message}"
-            Log.w(TAG, "native bypass unavailable: $lastError")
+            nativeDetail = "load fail: ${it.javaClass.simpleName}: ${it.message}"
+            Log.w(TAG, "native bypass unavailable: $nativeDetail")
             false
         }
     }
@@ -53,13 +57,15 @@ object HiddenApiBypass {
             return true
         }
         // 1) native first — Java-level enforcement does not see JNI calls
-        if (applyNative()) {
+        val nativeOk = applyNative()
+        if (nativeOk) {
             applied = true
             Log.i(TAG, "hidden api exemptions applied (native)")
             return true
         }
         // 2) meta-reflection fallback (works <= API 14-ish ROMs)
-        return runCatching {
+        var metaDetail = "ok"
+        val metaOk = runCatching {
             val classArrayClass: Class<*> = emptyArray<Class<*>>().javaClass
             val stringArrayClass: Class<*> = emptyArray<String>().javaClass
             val forName = Class::class.java.getDeclaredMethod("forName", String::class.java)
@@ -79,10 +85,12 @@ object HiddenApiBypass {
             Log.i(TAG, "hidden api exemptions applied")
             true
         }.getOrElse {
-            lastError = "${it.javaClass.simpleName}: ${it.message}"
-            Log.w(TAG, "bypass failed: $lastError")
+            metaDetail = "${it.javaClass.simpleName}: ${it.message}"
+            Log.w(TAG, "meta bypass failed: $metaDetail")
             false
         }
+        lastError = "native[$nativeDetail] meta[$metaDetail]"
+        return metaOk
     }
 
     /**

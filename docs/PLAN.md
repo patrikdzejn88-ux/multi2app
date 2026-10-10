@@ -60,10 +60,30 @@ code entry — camera scan later); first-launch privacy dialog; Kill All Apps;
 slots expanded to p499 (1000 manifest components, generated stubs).
 Not carried over (personal build): help chat backend, Find Help.
 
-### M6 — Polish & store
-Night mode Auto/Dark/Light, extracted-colors theming, marquee border,
-kill-all, boost, CrashGuard-equivalent (Crashlytics), release signing,
-Codemagic release pipeline.
+### M6 — Polish & store  [PARTIAL]
+DONE: night mode Auto/Dark/Light, kill-all, boost, Codemagic pipeline yaml.
+REMAINING:
+- extracted-colors theming (dynamic color from wallpaper, API 31+)
+- marquee border animation on space cards (setting stored, visual pending)
+- Crashlytics integration (firebase-bom, google-services.json from our project)
+- release signing (keystore via Codemagic environment variables)
+- GitHub push + first CI build + smoke test on device
+
+### Engine iterations (post-first-CI, device-driven)
+- Guest Activity robustness: dialogs, toasts, IME inside guest UI
+- Notification relay: ProxyNotificationService stub → real forwarding
+- Proxy traffic routing: engine applies ProxyRepository.activeForSpace
+  to guest sockets (VPNService/tun or socket-level hook)
+- Account/location/device-info hooks for guests
+- Google Suite install inside clones
+- BiometricPrompt + device-credential reset for private space
+- MLKit QR scanning in File Transfer (manual code entry works now)
+- apply language selection to UI locale (stored, not applied)
+- Secret Media (original feature)
+- Keep-alive: start AdminService foreground from the setting toggle
+
+### Dropped intentionally (personal build)
+VIP/billing/ads/backend, Find Help chat, 32-bit companion package (gp32).
 
 ## Verification
 Every milestone: parallel review agents cross-check screens/strings/routes

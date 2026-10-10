@@ -33,6 +33,8 @@
     <string name="engine_request_task_generate_device_fail">Ошибка генерации ID!</string>
     <string name="engine_request_task_fail_for_policy">Запрещено политикой Google!</string>
     <string name="engine_request_unknown">Неизвестный запрос!</string>
+    <string name="boot_fail_detail">Ошибка запуска: %1$s</string>
+    <string name="launch_fail_detail">Ошибка активности: %1$s</string>
     <string name="admin_launch_loading">Запуск движка…</string>
     <string name="notification_running_warn">Не выгружайте приложение из фона для получения сообщений</string>
     <string name="assist_reserve_loading">Запуск %1$s…</string>

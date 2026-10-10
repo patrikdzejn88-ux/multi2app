@@ -69,13 +69,13 @@ open class AssistActivity : Activity() {
                             status.text = getString(R.string.memory_space_running_title, pkg)
                             spinner.visibility = android.view.View.GONE
                         }
-                    }.onFailure {
+                    }.onFailure { err ->
                         spinner.visibility = android.view.View.GONE
-                        status.text = getString(R.string.memory_space_running_title, pkg)
+                        status.text = getString(R.string.launch_fail_detail, err.message ?: "?")
                     }
-                }.onFailure {
+                }.onFailure { err ->
                     spinner.visibility = android.view.View.GONE
-                    status.text = getString(R.string.engine_request_task_install_fail)
+                    status.text = getString(R.string.boot_fail_detail, err.message ?: "?")
                 }
             }
         }.start()

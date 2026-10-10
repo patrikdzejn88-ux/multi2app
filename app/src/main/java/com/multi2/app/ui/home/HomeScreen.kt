@@ -1,7 +1,10 @@
 package com.multi2.app.ui.home
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.multi2.app.R
+import com.multi2.app.data.db.ClonedAppEntity
 import com.multi2.app.engine.AppPermissions
 import com.multi2.app.ui.nav.Routes
 import com.multi2.app.ui.util.rememberAppIcon
@@ -72,6 +76,7 @@ fun HomeScreen(
     onOpenApps: () -> Unit,
     onOpenRoute: (String) -> Unit,
     onOpenApp: (String, Int) -> Unit,
+    onOpenDeviceInfo: (String, Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val spaces by viewModel.spaces.collectAsStateWithLifecycle()
@@ -80,6 +85,29 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     var renamingSpace by remember { mutableStateOf<SpaceUiModel?>(null) }
     var deletingSpace by remember { mutableStateOf<SpaceUiModel?>(null) }
+    val context = LocalContext.current
+
+    // Original parity: tap = launch clone, long-press = app popup menu.
+    val dispatch: (HomeAppAction, ClonedAppEntity) -> Unit = { action, app ->
+        when (action) {
+            HomeAppAction.OPEN -> viewModel.launchApp(app.pkg, app.spaceId) { err ->
+                err?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+            }
+            HomeAppAction.STOP -> viewModel.stopApp(app.pkg, app.spaceId)
+            HomeAppAction.SHORTCUT -> viewModel.addShortcut(app.pkg, app.spaceId, app.fakeLabel ?: app.label) { ok ->
+                Toast.makeText(
+                    context,
+                    if (ok) context.getString(R.string.shortcut_hint_title) else context.getString(R.string.network_error),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+            HomeAppAction.DEVICE_INFO -> onOpenDeviceInfo(app.pkg, app.spaceId)
+            HomeAppAction.HIDE -> viewModel.toggleHidden(app)
+            HomeAppAction.PIN -> viewModel.togglePin(app)
+            HomeAppAction.DETAIL -> onOpenApp(app.pkg, app.spaceId)
+            HomeAppAction.UNINSTALL -> viewModel.uninstallApp(app.pkg, app.spaceId)
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -166,7 +194,7 @@ fun HomeScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { onOpenApp(app.pkg, spaceId) }
+                                            .clickable { dispatch(HomeAppAction.OPEN, app) }
                                             .padding(vertical = 6.dp),
                                     ) {
                                         val icon = rememberAppIcon(app.pkg)
@@ -201,7 +229,7 @@ fun HomeScreen(
                 items(spaces, key = { it.id }) { space ->
                     SpaceCard(
                         space = space,
-                        onOpenApp = onOpenApp,
+                        onAppAction = dispatch,
                         onImport = onOpenApps,
                         onRename = { renamingSpace = space },
                         onDelete = { deletingSpace = space },
@@ -325,10 +353,11 @@ private fun DrawerItem(labelRes: Int, onClick: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SpaceCard(
     space: SpaceUiModel,
-    onOpenApp: (String, Int) -> Unit,
+    onAppAction: (HomeAppAction, ClonedAppEntity) -> Unit,
     onImport: () -> Unit,
     onRename: () -> Unit,
     onDelete: () -> Unit,
@@ -402,11 +431,15 @@ private fun SpaceCard(
             } else {
                 Spacer(Modifier.height(8.dp))
                 space.apps.forEach { app ->
+                    var appMenuOpen by remember(app.pkg) { mutableStateOf(false) }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onOpenApp(app.pkg, space.id) }
+                            .combinedClickable(
+                                onClick = { onAppAction(HomeAppAction.OPEN, app) },
+                                onLongClick = { appMenuOpen = true },
+                            )
                             .padding(vertical = 6.dp),
                     ) {
                         val icon = rememberAppIcon(app.pkg)
@@ -420,10 +453,61 @@ private fun SpaceCard(
                             app.fakeLabel ?: app.label,
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 1,
+                            modifier = Modifier.weight(1f),
                         )
+                        IconButton(onClick = { appMenuOpen = true }) {
+                            Icon(
+                                Icons.Default.MoreVert,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = appMenuOpen,
+                            onDismissRequest = { appMenuOpen = false },
+                        ) {
+                            AppMenuItem(R.string.app_detail_open) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.OPEN, app)
+                            }
+                            AppMenuItem(R.string.app_stop) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.STOP, app)
+                            }
+                            AppMenuItem(R.string.app_detail_fix_shortcut) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.SHORTCUT, app)
+                            }
+                            AppMenuItem(R.string.virtual_device_info_title) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.DEVICE_INFO, app)
+                            }
+                            AppMenuItem(
+                                if (app.hidden) R.string.drawer_display_hidden_apps
+                                else R.string.app_detail_hidden_app,
+                            ) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.HIDE, app)
+                            }
+                            AppMenuItem(
+                                if (app.pinned) R.string.space_app_item_menu_unpin
+                                else R.string.space_app_item_menu_pin,
+                            ) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.PIN, app)
+                            }
+                            AppMenuItem(R.string.app_detail_title) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.DETAIL, app)
+                            }
+                            AppMenuItem(R.string.app_detail_uninstall) {
+                                appMenuOpen = false; onAppAction(HomeAppAction.UNINSTALL, app)
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun AppMenuItem(labelRes: Int, onClick: () -> Unit) {
+    DropdownMenuItem(text = { Text(stringResource(labelRes)) }, onClick = onClick)
+}
+
+/** Per-app popup actions — parity with the original's long-press dialog. */
+enum class HomeAppAction { OPEN, STOP, SHORTCUT, DEVICE_INFO, HIDE, PIN, DETAIL, UNINSTALL }

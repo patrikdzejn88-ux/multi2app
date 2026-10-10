@@ -38,6 +38,8 @@
     <string name="engine_request_task_generate_device_fail">Generate ID fail!</string>
     <string name="engine_request_task_fail_for_policy">Google Policy Not Allow!</string>
     <string name="engine_request_unknown">Unknown request!</string>
+    <string name="boot_fail_detail">Launch failed: %1$s</string>
+    <string name="launch_fail_detail">Activity failed: %1$s</string>
     <string name="admin_launch_loading">Engine is starting…</string>
     <string name="notification_running_warn">Please keep background running for receiving messages</string>
     <string name="assist_reserve_loading">Trying to launch %1$s…</string>

@@ -28,6 +28,9 @@ fun AppNavHost(navController: NavHostController) {
                 onOpenApps = { navController.navigate(Routes.APPS) },
                 onOpenRoute = { route -> navController.navigate(route) },
                 onOpenApp = { pkg, spaceId -> navController.navigate(Routes.appDetail(pkg, spaceId)) },
+                onOpenDeviceInfo = { pkg, spaceId ->
+                    navController.navigate(Routes.virtualDeviceInfo(pkg, spaceId))
+                },
             )
         }
         composable(Routes.APPS) { AppsScreen(onBack = { navController.popBackStack() }) }

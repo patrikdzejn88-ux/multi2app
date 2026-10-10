@@ -12,6 +12,10 @@ workflows:
         - pattern: '*'
           include: true
     scripts:
+      - name: Install NDK + CMake
+        script: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "ndk;26.1.10909125" "cmake;3.22.1"
       - name: Generate Gradle wrapper
         script: gradle wrapper --gradle-version 8.10.2 --distribution-type bin
       - name: Build APK (release)

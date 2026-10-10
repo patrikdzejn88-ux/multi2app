@@ -27,12 +27,38 @@ object HiddenApiBypass {
     var lastError: String? = null
         private set
 
+    @Volatile
+    private var nativeTried = false
+
+    /** JNI bypass — not subject to Java hidden-API filtering (API 15-safe). */
+    private external fun nativeApplyHiddenApiBypass(): Boolean
+
+    private fun applyNative(): Boolean {
+        if (nativeTried) return false
+        nativeTried = true
+        return runCatching {
+            System.loadLibrary("multi2bypass")
+            nativeApplyHiddenApiBypass()
+        }.getOrElse {
+            lastError = "native: ${it.javaClass.simpleName}: ${it.message}"
+            Log.w(TAG, "native bypass unavailable: $lastError")
+            false
+        }
+    }
+
     fun apply(): Boolean {
         if (applied) return true
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) {
             applied = true
             return true
         }
+        // 1) native first — Java-level enforcement does not see JNI calls
+        if (applyNative()) {
+            applied = true
+            Log.i(TAG, "hidden api exemptions applied (native)")
+            return true
+        }
+        // 2) meta-reflection fallback (works <= API 14-ish ROMs)
         return runCatching {
             val classArrayClass: Class<*> = emptyArray<Class<*>>().javaClass
             val stringArrayClass: Class<*> = emptyArray<String>().javaClass

@@ -10,6 +10,7 @@ plugins {
 android {
     namespace = "com.multi2.app"
     compileSdk = 35
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.multi2.app"
@@ -18,7 +19,15 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
+        ndk { abiFilters += setOf("arm64-v8a", "armeabi-v7a") }
         vectorDrawables { useSupportLibrary = true }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 
     buildTypes {

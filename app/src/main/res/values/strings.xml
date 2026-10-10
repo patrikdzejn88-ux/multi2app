@@ -141,6 +141,10 @@
     <string name="privacy_dialog_message">To provide you with a list of the apps on your device that can be cloned, we need to read your installed applications list. All data stays on your device and is never shared with third parties. Tap Agree and Continue to accept the Terms of Service.</string>
     <string name="privacy_positive">Agree and Continue</string>
     <string name="privacy_negative">Decline</string>
+
+    <!-- kill all -->
+    <string name="menu_kill_all">Kill All Apps</string>
+    <string name="action_kill_all_content">Are you sure kill all apps?</string>
     <string name="label_def">Label</string>
     <string name="dialog_message_uninstall">Are you sure you want to uninstall the app?</string>
 

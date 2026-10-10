@@ -27,6 +27,7 @@ data class SpaceUiModel(
 class HomeViewModel @Inject constructor(
     private val spaceRepository: SpaceRepository,
     private val settingsRepository: SettingsRepository,
+    private val cloneLauncher: com.multi2.app.engine.launch.CloneLauncher,
 ) : ViewModel() {
 
     val settings = settingsRepository.settings
@@ -80,5 +81,14 @@ class HomeViewModel @Inject constructor(
 
     fun deleteSpace(spaceId: Int) {
         viewModelScope.launch { spaceRepository.deleteSpaceById(spaceId) }
+    }
+
+    /** "Kill All Apps" — parity: confirm dialog, then stop every running clone. */
+    fun killAllApps(onDone: (Int) -> Unit) {
+        viewModelScope.launch {
+            val running = spaceRepository.getRunningApps()
+            running.forEach { cloneLauncher.stop(it.pkg, it.spaceId) }
+            onDone(running.size)
+        }
     }
 }

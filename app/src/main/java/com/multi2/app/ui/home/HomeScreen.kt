@@ -109,6 +109,30 @@ fun HomeScreen(
                             Icon(Icons.Default.Menu, contentDescription = null)
                         }
                     },
+                    actions = {
+                        var confirmKill by remember { mutableStateOf(false) }
+                        TextButton(onClick = { confirmKill = true }) {
+                            Text(stringResource(R.string.menu_kill_all))
+                        }
+                        if (confirmKill) {
+                            AlertDialog(
+                                onDismissRequest = { confirmKill = false },
+                                title = { Text(stringResource(R.string.menu_kill_all)) },
+                                text = { Text(stringResource(R.string.action_kill_all_content)) },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        confirmKill = false
+                                        viewModel.killAllApps { }
+                                    }) { Text(stringResource(R.string.btn_sure)) }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { confirmKill = false }) {
+                                        Text(stringResource(R.string.btn_cancel))
+                                    }
+                                },
+                            )
+                        }
+                    },
                 )
             },
             floatingActionButton = {

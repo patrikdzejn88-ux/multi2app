@@ -52,9 +52,13 @@ No VIP, no billing, no ads, no backend: this is a personal-use build.
 All features unlocked (clone into any number of spaces, no gating).
 VIP module deleted (screens/repository/routes/drawer).
 
-### M5 — Private space, file transfer, help
-Pattern lock + biometrics, hidden space; WiFi QR file transfer; help chat;
-onboarding/privacy consent; keep-alive foreground notifications.
+### M5 — Private space, file transfer, onboarding  [DONE]
+Pattern lock (3x3 canvas, salted SHA-256) + private space (DB v3,
+excluded from home, setup/education/unlock/content states); File Transfer
+(same-network TCP, token protocol, on-the-fly zip, ZXing QR code, manual
+code entry — camera scan later); first-launch privacy dialog; Kill All Apps;
+slots expanded to p499 (1000 manifest components, generated stubs).
+Not carried over (personal build): help chat backend, Find Help.
 
 ### M6 — Polish & store
 Night mode Auto/Dark/Light, extracted-colors theming, marquee border,

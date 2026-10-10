@@ -10,7 +10,6 @@ import com.multi2.app.engine.task.EngineTaskState
 import com.multi2.app.engine.task.EngineTaskType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,6 +46,8 @@ class EngineCore @Inject constructor(
         report(EngineTaskState.ANALYZING)
         EnginePaths.prepareAppDirs(context, task.spaceId, parsed.pkg)
         apkInstaller.extractNativeLibs(parsed.pkg, task.spaceId)
+        // every clone gets its own virtual identity at install time (parity)
+        VirtualDeviceStore.loadOrGenerate(context, task.spaceId, parsed.pkg)
         report(EngineTaskState.INSTALLING)
         spaceRepository.enqueueClone(
             pkg = parsed.pkg,
@@ -101,9 +102,7 @@ class EngineCore @Inject constructor(
 
     private suspend fun generateId(task: EngineTask, report: (EngineTaskState) -> Unit) {
         report(EngineTaskState.GENERATING)
-        val idFile = File(EnginePaths.dataDir(context, task.spaceId, task.pkg), "virtual_id")
-        idFile.parentFile?.mkdirs()
-        idFile.writeText(UUID.randomUUID().toString())
+        VirtualDeviceStore.regenerate(context, task.spaceId, task.pkg)
         report(EngineTaskState.GENERATE_OK)
     }
 

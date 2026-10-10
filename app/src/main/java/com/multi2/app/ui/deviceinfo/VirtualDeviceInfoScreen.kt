@@ -43,7 +43,7 @@ fun VirtualDeviceInfoScreen(
     onBack: () -> Unit,
     viewModel: VirtualDeviceInfoViewModel = hiltViewModel(),
 ) {
-    val virtualId by viewModel.virtualId.collectAsStateWithLifecycle()
+    val info by viewModel.info.collectAsStateWithLifecycle()
     val resetting by viewModel.resetting.collectAsStateWithLifecycle()
     var confirmReset by remember { mutableStateOf(false) }
     val clipboard = LocalClipboardManager.current
@@ -65,15 +65,26 @@ fun VirtualDeviceInfoScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        stringResource(R.string.app_detail_virtual_id),
-                        style = MaterialTheme.typography.titleMedium,
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    DeviceIdRow(
+                        label = stringResource(R.string.vinfo_android_id),
+                        value = info?.androidId,
+                        onCopy = { info?.androidId?.let { clipboard.setText(AnnotatedString(it)) } },
                     )
-                    Text(
-                        virtualId ?: stringResource(R.string.state_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                    DeviceIdRow(
+                        label = stringResource(R.string.vinfo_wifi_mac),
+                        value = info?.wifiMac,
+                        onCopy = { info?.wifiMac?.let { clipboard.setText(AnnotatedString(it)) } },
+                    )
+                    DeviceIdRow(
+                        label = stringResource(R.string.vinfo_bt_mac),
+                        value = info?.bluetoothMac,
+                        onCopy = { info?.bluetoothMac?.let { clipboard.setText(AnnotatedString(it)) } },
+                    )
+                    DeviceIdRow(
+                        label = stringResource(R.string.vinfo_icc_serial),
+                        value = info?.iccSerial,
+                        onCopy = { info?.iccSerial?.let { clipboard.setText(AnnotatedString(it)) } },
                     )
                 }
             }
@@ -87,10 +98,6 @@ fun VirtualDeviceInfoScreen(
                     onClick = { confirmReset = true },
                     enabled = !resetting,
                 ) { Text(stringResource(R.string.virtual_device_info_reset_btn)) }
-                TextButton(
-                    onClick = { virtualId?.let { clipboard.setText(AnnotatedString(it)) } },
-                    enabled = virtualId != null,
-                ) { Text(stringResource(R.string.vinfo_copy)) }
             }
         }
     }
@@ -112,5 +119,22 @@ fun VirtualDeviceInfoScreen(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun DeviceIdRow(label: String, value: String?, onCopy: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+            Text(
+                value ?: stringResource(R.string.state_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        TextButton(onClick = onCopy, enabled = value != null) {
+            Text(stringResource(R.string.vinfo_copy))
+        }
     }
 }

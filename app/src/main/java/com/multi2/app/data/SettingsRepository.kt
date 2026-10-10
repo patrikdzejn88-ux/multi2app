@@ -40,6 +40,7 @@ class SettingsRepository @Inject constructor(
         val DEV_MODE = booleanPreferencesKey("developer_mode")
         val LANGUAGE = stringPreferencesKey("language")
         val PRIVACY_ACCEPTED = booleanPreferencesKey("privacy_accepted")
+        val SETUP_DONE = booleanPreferencesKey("setup_done")
     }
 
     val settings: Flow<AppSettings> = context.settingsStore.data.map { p ->
@@ -86,5 +87,12 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setDeveloperMode(value: Boolean) {
         context.settingsStore.edit { it[Keys.DEV_MODE] = value }
+    }
+
+    /** One-time onboarding (privacy + permission batch) completed. */
+    val setupDone: Flow<Boolean> = context.settingsStore.data.map { it[Keys.SETUP_DONE] ?: false }
+
+    suspend fun setSetupDone(value: Boolean) {
+        context.settingsStore.edit { it[Keys.SETUP_DONE] = value }
     }
 }

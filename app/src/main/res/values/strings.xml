@@ -78,6 +78,9 @@
     <string name="space_card_menu_install">Import Apps</string>
     <string name="space_card_menu_rename_space">Edit Title</string>
     <string name="space_card_menu_rename_holder">Input new title</string>
+    <string name="space_card_menu_install_google_suite">Install Google Suite</string>
+    <string name="space_card_menu_remove_google_suite">Remove Google Suite</string>
+    <string name="google_missing_msg">Google Play Services is missing on this device, so this feature cannot be used.</string>
 
     <!-- app detail -->
     <string name="app_detail_title">App Detail</string>
@@ -106,6 +109,10 @@
     <string name="virtual_id_reset_message">The system provide a virtual lD(likely as device id, wifi mac) to installed apps. You can reset a virtual ID to prevent app from tracking your behavior and preferences and protect your privacy. If you reset it now, your app data might be lost or become unusable. Reset virtual ID anyway?</string>
     <string name="virtual_device_info_reset_btn">Reset</string>
     <string name="vinfo_copy">Copy</string>
+    <string name="vinfo_android_id">Android ID</string>
+    <string name="vinfo_wifi_mac">Wi-Fi MAC</string>
+    <string name="vinfo_bt_mac">Bluetooth MAC</string>
+    <string name="vinfo_icc_serial">ICC serial</string>
 
     <!-- private space / pattern lock -->
     <string name="private_space_education_title">About private space</string>
@@ -141,6 +148,10 @@
     <string name="privacy_dialog_message">To provide you with a list of the apps on your device that can be cloned, we need to read your installed applications list. All data stays on your device and is never shared with third parties. Tap Agree and Continue to accept the Terms of Service.</string>
     <string name="privacy_positive">Agree and Continue</string>
     <string name="privacy_negative">Decline</string>
+    <string name="setup_permissions_title">One-time setup</string>
+    <string name="setup_permissions_message">Grant permissions once — every clone will get them automatically, no popups inside apps (just like the original).</string>
+    <string name="setup_permissions_btn">Allow all</string>
+    <string name="setup_permissions_skip">Skip</string>
 
     <!-- kill all -->
     <string name="menu_kill_all">Kill All Apps</string>

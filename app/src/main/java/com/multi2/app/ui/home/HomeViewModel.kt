@@ -1,11 +1,17 @@
 package com.multi2.app.ui.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.multi2.app.data.SettingsRepository
 import com.multi2.app.data.SpaceRepository
 import com.multi2.app.data.db.ClonedAppEntity
+import com.multi2.app.engine.GoogleSuite
+import com.multi2.app.engine.task.EngineTask
+import com.multi2.app.engine.task.EngineTaskManager
+import com.multi2.app.engine.task.EngineTaskType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,17 +27,27 @@ data class SpaceUiModel(
     val title: String,
     val appCount: Int,
     val apps: List<ClonedAppEntity>,
+    val googleSuiteInstalled: Boolean = false,
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val spaceRepository: SpaceRepository,
     private val settingsRepository: SettingsRepository,
     private val cloneLauncher: com.multi2.app.engine.launch.CloneLauncher,
+    private val taskManager: EngineTaskManager,
 ) : ViewModel() {
 
     val settings = settingsRepository.settings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val setupDone = settingsRepository.setupDone
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    fun markSetupDone() {
+        viewModelScope.launch { settingsRepository.setSetupDone(true) }
+    }
 
     private val showHidden = settingsRepository.settings
         .map { it.showHiddenApps }
@@ -52,6 +68,7 @@ class HomeViewModel @Inject constructor(
                                     title = space.title,
                                     appCount = apps.size,
                                     apps = if (show) apps else apps.filter { !it.hidden },
+                                    googleSuiteInstalled = GoogleSuite.isInstalledInSpace(apps),
                                 )
                             }
                         },
@@ -89,6 +106,42 @@ class HomeViewModel @Inject constructor(
             val running = spaceRepository.getRunningApps()
             running.forEach { cloneLauncher.stop(it.pkg, it.spaceId) }
             onDone(running.size)
+        }
+    }
+
+    /** Install Google Suite (Play Store + GMS + GSF) into a space. */
+    fun installGoogleSuite(spaceId: Int, onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            val available = GoogleSuite.installedOnHost(context)
+            available.forEach { pkg ->
+                taskManager.submit(
+                    EngineTask(
+                        id = System.nanoTime(),
+                        type = EngineTaskType.INSTALL,
+                        pkg = pkg,
+                        spaceId = spaceId,
+                        label = pkg,
+                    ),
+                )
+            }
+            onResult(available.size)
+        }
+    }
+
+    /** Remove Google Suite packages from a space. */
+    fun removeGoogleSuite(spaceId: Int) {
+        viewModelScope.launch {
+            GoogleSuite.PACKAGES.forEach { pkg ->
+                taskManager.submit(
+                    EngineTask(
+                        id = System.nanoTime(),
+                        type = EngineTaskType.UNINSTALL,
+                        pkg = pkg,
+                        spaceId = spaceId,
+                        label = pkg,
+                    ),
+                )
+            }
         }
     }
 }

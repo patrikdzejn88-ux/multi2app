@@ -33,6 +33,9 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.multi2.app.R
+import com.multi2.app.engine.AppPermissions
 import com.multi2.app.ui.nav.Routes
 import com.multi2.app.ui.util.rememberAppIcon
 import kotlinx.coroutines.launch
@@ -136,7 +140,7 @@ fun HomeScreen(
                 )
             },
             floatingActionButton = {
-                IconButton(onClick = { viewModel.createSpace() }) {
+                FloatingActionButton(onClick = { viewModel.createSpace() }) {
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
             },
@@ -201,6 +205,8 @@ fun HomeScreen(
                         onImport = onOpenApps,
                         onRename = { renamingSpace = space },
                         onDelete = { deletingSpace = space },
+                        onInstallGoogleSuite = { viewModel.installGoogleSuite(space.id) { } },
+                        onRemoveGoogleSuite = { viewModel.removeGoogleSuite(space.id) },
                     )
                 }
             }
@@ -272,6 +278,31 @@ fun HomeScreen(
             },
         )
     }
+
+    // One-time permission batch — guests share the host uid, so granting
+    // everything here makes clones "just work" without permission prompts,
+    // exactly like the original's automatic setup.
+    val setupDone by viewModel.setupDone.collectAsStateWithLifecycle()
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { viewModel.markSetupDone() }
+    if (settings?.privacyAccepted == true && !setupDone) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(stringResource(R.string.setup_permissions_title)) },
+            text = { Text(stringResource(R.string.setup_permissions_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    permissionLauncher.launch(AppPermissions.runtimeBatch())
+                }) { Text(stringResource(R.string.setup_permissions_btn)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.markSetupDone() }) {
+                    Text(stringResource(R.string.setup_permissions_skip))
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -301,6 +332,8 @@ private fun SpaceCard(
     onImport: () -> Unit,
     onRename: () -> Unit,
     onDelete: () -> Unit,
+    onInstallGoogleSuite: () -> Unit,
+    onRemoveGoogleSuite: () -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
 
@@ -326,6 +359,23 @@ private fun SpaceCard(
                             onImport()
                         },
                     )
+                    if (space.googleSuiteInstalled) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.space_card_menu_remove_google_suite)) },
+                            onClick = {
+                                menuOpen = false
+                                onRemoveGoogleSuite()
+                            },
+                        )
+                    } else {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.space_card_menu_install_google_suite)) },
+                            onClick = {
+                                menuOpen = false
+                                onInstallGoogleSuite()
+                            },
+                        )
+                    }
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.space_card_menu_rename_space)) },
                         onClick = {

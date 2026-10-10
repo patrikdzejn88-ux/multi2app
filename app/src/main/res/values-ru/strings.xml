@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Multi2 App</string>
+    <string name="app_name_short">Multi2</string>
+
+    <!-- engine task flow -->
+    <string name="engine_request_close">Закрыть</string>
+    <string name="engine_request_task_checking">Проверка…</string>
+    <string name="engine_request_task_in_queue">Ожидание…</string>
+    <string name="engine_request_task_pending">Выберите действие…</string>
+    <string name="engine_request_task_copying">Копирование apk…</string>
+    <string name="engine_request_task_in_analyze">Анализ…</string>
+    <string name="engine_request_task_installing">Установка…</string>
+    <string name="engine_request_task_install_complete">Установлено!</string>
+    <string name="engine_request_task_install_fail">Ошибка установки!</string>
+    <string name="engine_request_task_uninstalling">Удаление…</string>
+    <string name="engine_request_task_uninstall_complete">Удалено!</string>
+    <string name="engine_request_task_uninstall_fail">Ошибка удаления!</string>
+    <string name="engine_request_task_repairing">Восстановление…</string>
+    <string name="engine_request_task_repairing_complete">Восстановлено!</string>
+    <string name="engine_request_task_repairing_fail">Ошибка восстановления!</string>
+    <string name="engine_request_task_clear_app_cache">Очистка кэша…</string>
+    <string name="engine_request_task_clear_app_cache_complete">Кэш очищен!</string>
+    <string name="engine_request_task_clear_app_cache_fail">Ошибка очистки кэша!</string>
+    <string name="engine_request_task_clear_app_data">Очистка данных…</string>
+    <string name="engine_request_task_clear_app_data_complete">Данные очищены!</string>
+    <string name="engine_request_task_clear_app_data_fail">Ошибка очистки данных!</string>
+    <string name="engine_request_task_force_stop">Остановка…</string>
+    <string name="engine_request_task_force_stop_complete">Остановлено!</string>
+    <string name="engine_request_task_force_stop_fail">Ошибка остановки!</string>
+    <string name="engine_request_task_generate_device">Генерация…</string>
+    <string name="engine_request_task_generate_device_complete">ID сгенерирован!</string>
+    <string name="engine_request_task_generate_device_fail">Ошибка генерации ID!</string>
+    <string name="engine_request_task_fail_for_policy">Запрещено политикой Google!</string>
+    <string name="engine_request_unknown">Неизвестный запрос!</string>
+    <string name="admin_launch_loading">Запуск движка…</string>
+    <string name="notification_running_warn">Не выгружайте приложение из фона для получения сообщений</string>
+    <string name="assist_reserve_loading">Запуск %1$s…</string>
+
+    <!-- home / spaces -->
+    <string name="virtual_space_card_title_holder">Виртуальное пространство-%1$d</string>
+    <string name="space_title_short">VP-%1$d</string>
+    <string name="stick_card_title">Закреплённые</string>
+    <string name="apps_title">Добавить приложения</string>
+    <string name="apps_menu_install_from_file">Импорт из файла</string>
+
+    <!-- drawer -->
+    <string name="drawer_header_account">Аккаунт</string>
+    <string name="drawer_header_general">Основные</string>
+    <string name="drawer_header_tool">Инструменты</string>
+    <string name="drawer_settings">Настройки</string>
+    <string name="drawer_switch_language">Язык</string>
+    <string name="drawer_touch_vibrator">Вибрация при касании</string>
+    <string name="drawer_display_hidden_apps">Показывать скрытые приложения</string>
+    <string name="drawer_hide_hidden_apps">Не показывать скрытые приложения</string>
+    <string name="drawer_memory_manager">Диспетчер задач</string>
+    <string name="drawer_storage_manager">Хранилище</string>
+    <string name="drawer_file_trans">Передача файлов</string>
+    <string name="drawer_private_space">Приватное пространство</string>
+    <string name="drawer_find_help">Помощь</string>
+    <string name="drawer_share_app">Поделиться с друзьями</string>
+
+    <!-- clone dialog -->
+    <string name="apps_clone_dialog_title">Выберите количество виртуальных пространств для установки:</string>
+
+    <!-- space card -->
+    <string name="space_apps_count">Приложений: %1$d</string>
+    <string name="space_card_menu_install">Добавить приложения</string>
+    <string name="space_card_menu_rename_space">Переименовать</string>
+    <string name="space_card_menu_rename_holder">Введите новое название</string>
+    <string name="space_card_menu_install_google_suite">Установить Google Suite</string>
+    <string name="space_card_menu_remove_google_suite">Удалить Google Suite</string>
+    <string name="google_missing_msg">На этом устройстве отсутствуют сервисы Google Play, функция недоступна.</string>
+
+    <!-- app detail -->
+    <string name="app_detail_title">О приложении</string>
+    <string name="app_detail_pkg">pkg: %1$s</string>
+    <string name="app_detail_open">Открыть</string>
+    <string name="app_stop">Остановить</string>
+    <string name="app_detail_fix">Исправить</string>
+    <string name="app_detail_fix_shortcut">Ярлык</string>
+    <string name="app_detail_export_data">Экспорт</string>
+    <string name="app_detail_virtual_id">ID устройства</string>
+    <string name="app_detail_hidden_app">Скрытое приложение</string>
+    <string name="app_detail_traceable">Поддержка GG</string>
+    <string name="app_detail_google_installer">Включить установщик Google</string>
+    <string name="hook_virtual_sdcard">Виртуальная SD-карта</string>
+    <string name="hook_hide_dev_mode">Скрыть режим разработчика</string>
+    <string name="hook_deny_read_host_apps">Запретить чтение списка приложений телефона</string>
+    <string name="app_detail_app_fake">Подмена приложения</string>
+    <string name="app_detail_uninstall">Удалить</string>
+    <string name="space_app_item_menu_pin">Закрепить сверху</string>
+    <string name="space_app_item_menu_unpin">Открепить сверху</string>
+    <string name="shortcut_hint_title">Запрос ярлыка отправлен</string>
+    <string name="appzip_save_success">Информация о приложении сохранена в файловый менеджер!</string>
+    <string name="appzip_save_failed">Не удалось сохранить данные приложения!</string>
+    <string name="virtual_device_info_title">Инфо устройства</string>
+    <string name="virtual_id_reset_title">Сбросить виртуальный ID</string>
+    <string name="virtual_id_reset_message">Система выдаёт приложениям виртуальный ID (device id, Wi-Fi MAC, Bluetooth MAC, ICC serial). Сброс ID защищает от отслеживания, но данные приложения могут быть потеряны. Сбросить виртуальный ID?</string>
+    <string name="virtual_device_info_reset_btn">Сбросить</string>
+    <string name="vinfo_copy">Копировать</string>
+    <string name="vinfo_android_id">Android ID</string>
+    <string name="vinfo_wifi_mac">MAC Wi-Fi</string>
+    <string name="vinfo_bt_mac">MAC Bluetooth</string>
+    <string name="vinfo_icc_serial">ICC серийный</string>
+
+    <!-- private space / pattern lock -->
+    <string name="private_space_education_title">О приватном пространстве</string>
+    <string name="private_space_hide_apps_summary">Скрывайте и блокируйте личные приложения в отдельном пространстве. После установки приложение можно удалить с телефона — в приватном пространстве оно продолжит работать.</string>
+    <string name="lockpattern_choose_header">Задайте графический ключ</string>
+    <string name="lockpattern_confirm_header">Подтвердите ключ</string>
+    <string name="lockpattern_confirm_generic">Нарисуйте ключ для продолжения</string>
+    <string name="lockpattern_setting_step_touch">Отпустите палец, когда закончите.</string>
+    <string name="lockpattern_too_short">Соедините минимум четыре точки. Попробуйте снова.</string>
+    <string name="lockpattern_wrong">Неверный ключ</string>
+    <string name="lockpattern_need_to_confirm">Нарисуйте ключ ещё раз для подтверждения</string>
+    <string name="lockpattern_retry_button_text">Очистить</string>
+    <string name="lockpattern_record_success">Графический ключ успешно установлен.</string>
+
+    <!-- file transfer -->
+    <string name="file_trans_title">Передача файлов</string>
+    <string name="file_trans_send">Отправить</string>
+    <string name="file_trans_receive">Получить</string>
+    <string name="file_trans_code_hint">192.168.1.10:54321</string>
+    <string name="file_trans_start">Начать передачу</string>
+    <string name="file_trans_waiting">Ожидание файлов…</string>
+    <string name="file_trans_connect_target_device">Подключение к устройству</string>
+    <string name="file_trans_same_network_hint">Убедитесь, что устройства подключены к одной сети Wi-Fi или точке доступа.</string>
+    <string name="file_trans_sending">Отправка %1$d%%</string>
+    <string name="file_trans_receiving">Приём %1$d%%</string>
+    <string name="file_trans_complete">Передача завершена</string>
+    <string name="file_trans_failed">Передача прервана</string>
+    <string name="file_trans_empty_tip">Нет приложений для передачи!</string>
+
+    <!-- onboarding privacy -->
+    <string name="privacy_dialog_title">Конфиденциальность</string>
+    <string name="privacy_dialog_message">Чтобы показать список приложений, доступных для клонирования, нам нужно прочитать список установленных приложений. Все данные остаются на устройстве и никому не передаются. Нажмите «Принять и продолжить», чтобы согласиться с условиями использования.</string>
+    <string name="privacy_positive">Принять и продолжить</string>
+    <string name="privacy_negative">Отклонить</string>
+    <string name="setup_permissions_title">Первоначальная настройка</string>
+    <string name="setup_permissions_message">Выдайте разрешения один раз — все клоны получат их автоматически, без всплывающих запросов внутри приложений (как в оригинале).</string>
+    <string name="setup_permissions_btn">Разрешить всё</string>
+    <string name="setup_permissions_skip">Пропустить</string>
+
+    <!-- kill all -->
+    <string name="menu_kill_all">Закрыть все приложения</string>
+    <string name="action_kill_all_content">Точно закрыть все приложения?</string>
+    <string name="label_def">Метка</string>
+    <string name="dialog_message_uninstall">Вы уверены, что хотите удалить приложение?</string>
+
+    <!-- settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_battery_optimize">Игнорировать оптимизацию батареи</string>
+    <string name="settings_battery_optimize_description">Отключите фоновые ограничения энергосбережения, чтобы клоны стабильно держали соединение и не пропадали из сети.</string>
+    <string name="settings_keep_alive">Удерживать в памяти</string>
+    <string name="settings_keep_alive_description">Эффективно предотвращает завершение работающего клона системой</string>
+    <string name="settings_developer_test">Параметры разработчика</string>
+    <string name="settings_developer_test_description">Только для локального тестирования</string>
+    <string name="appearance_night_mode">Ночной режим</string>
+    <string name="appearance_night_mode_auto">Авто</string>
+    <string name="appearance_night_mode_dark">Тёмный</string>
+    <string name="appearance_night_mode_light">Светлый</string>
+    <string name="appearance_night_mode_auto_description">Как в системе</string>
+    <string name="appearance_night_mode_dark_description">Только тёмные цвета</string>
+    <string name="appearance_night_mode_light_description">Только светлые цвета</string>
+    <string name="appearance_marquee_border">Анимированная рамка</string>
+    <string name="appearance_marquee_border_description">Динамический цвет рамки карточки пространства</string>
+    <string name="about_version">Версия</string>
+
+    <!-- proxy -->
+    <string name="drawer_proxy">Прокси</string>
+    <string name="proxy_title">Прокси</string>
+    <string name="proxy_empty">Прокси пока нет. Нажмите + чтобы добавить.</string>
+    <string name="proxy_add">Добавить прокси</string>
+    <string name="proxy_edit">Изменить прокси</string>
+    <string name="proxy_test">Проверить</string>
+    <string name="proxy_name">Название</string>
+    <string name="proxy_protocol">Протокол</string>
+    <string name="proxy_host">Хост</string>
+    <string name="proxy_port">Порт</string>
+    <string name="proxy_username">Имя пользователя (необязательно)</string>
+    <string name="proxy_password">Пароль (необязательно)</string>
+    <string name="proxy_scope">Применить к</string>
+    <string name="proxy_scope_global">Все пространства (по умолчанию)</string>
+    <string name="proxy_scope_space">Пространство: %1$s</string>
+
+    <!-- task manager -->
+    <string name="memory_title">Память</string>
+    <string name="memory_info_title">О памяти</string>
+    <string name="memory_space_summary">Всего: %1$s</string>
+    <string name="memory_space_running_title">%1$s запущено</string>
+    <string name="memory_empty_tip">Нет запущенных приложений</string>
+    <string name="memory_button_kill">Ускорить</string>
+
+    <!-- storage manager -->
+    <string name="storage_title">Хранилище</string>
+    <string name="storage_empty_tip">Нет приложений</string>
+    <string name="storage_sort_by_size">По размеру</string>
+    <string name="storage_sort_by_space">По пространству</string>
+    <string name="storage_pkg_sumary">Занято %1$s</string>
+    <string name="storage_pkg_install_dir">Каталог установки</string>
+    <string name="storage_pkg_data_dir">Данные и кэш</string>
+    <string name="storage_pkg_cache_dir">Кэш</string>
+    <string name="storage_pkg_clear_cache">Очистить кэш</string>
+    <string name="storage_pkg_clear_data">Очистить данные</string>
+    <string name="storage_pkg_uninstall">Удалить</string>
+    <string name="storage_clear_cache_msg">Очистить кэш этого приложения?</string>
+    <string name="storage_clear_data_msg">Очистить все данные этого приложения?</string>
+    <string name="storage_uninstall_msg">Удалить это приложение?</string>
+
+    <!-- about -->
+    <string name="about_title">О нас</string>
+    <string name="about_device_id">ID устройства</string>
+    <string name="about_developer">Разработчик</string>
+    <string name="about_developer_dialog_title">Проверка тестового аккаунта</string>
+    <string name="about_developer_dialog_tip">Введите имя аккаунта для активации локального теста:</string>
+    <string name="about_developer_dialog_holder">Тестовый аккаунт</string>
+    <string name="about_developer_toast_enter_test">Локальный тестовый режим активирован</string>
+    <string name="about_contact">Связаться с нами</string>
+    <string name="about_email">multi2@example.com</string>
+    <string name="about_github">Github</string>
+    <string name="about_telegram">Telegram</string>
+    <string name="about_privacy_policy">Политика конфиденциальности</string>
+    <string name="about_privacy_policy_content">Как мы обрабатываем ваши данные</string>
+    <string name="about_open_license">Лицензии открытого ПО</string>
+    <string name="about_open_license_content">Используемое открытое ПО</string>
+
+    <!-- common -->
+    <string name="btn_cancel">Отмена</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_sure">Да</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="close">Закрыть</string>
+    <string name="search">Поиск</string>
+    <string name="state_empty">Пусто</string>
+    <string name="network_error">Ошибка сети</string>
+</resources>

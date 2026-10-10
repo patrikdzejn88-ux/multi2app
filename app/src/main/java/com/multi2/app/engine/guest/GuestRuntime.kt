@@ -2,14 +2,19 @@ package com.multi2.app.engine.guest
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.ContentResolver
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
+import android.database.MatrixCursor
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import com.multi2.app.engine.EnginePaths
 import com.multi2.app.engine.HiddenApiBypass
+import com.multi2.app.engine.VirtualDeviceInfo
+import com.multi2.app.engine.VirtualDeviceStore
 import dalvik.system.DexClassLoader
 import java.io.File
 
@@ -130,11 +135,15 @@ class GuestContext(
     private val guestAppInfo: ApplicationInfo,
 ) : ContextWrapper(base) {
 
+    private val virtualDevice = VirtualDeviceStore.loadOrGenerate(base, spaceId, guestPkg)
+    private val spoofedResolver = SpoofedContentResolver(base, base.contentResolver, virtualDevice)
+
     override fun getClassLoader(): ClassLoader = guestClassLoader
     override fun getResources(): Resources = guestResources
     override fun getAssets(): AssetManager = guestResources.assets
     override fun getPackageName(): String = guestPkg
     override fun getApplicationInfo(): ApplicationInfo = guestAppInfo
+    override fun getContentResolver(): ContentResolver = spoofedResolver
     override fun getPackageResourcePath(): String =
         EnginePaths.apkDir(this, spaceId, guestPkg).absolutePath + "/base.apk"
 
@@ -143,4 +152,54 @@ class GuestContext(
     override fun getDir(name: String, mode: Int): File =
         File(EnginePaths.dataDir(this, spaceId, guestPkg), name).apply { mkdirs() }
     override fun getDataDir() = EnginePaths.dataDir(this, spaceId, guestPkg).apply { mkdirs() }
+}
+
+/**
+ * ContentResolver wrapper spoofing Settings.Secure android_id for guests.
+ * Settings.Secure.getString resolves via query()/call() on the settings
+ * provider — both are intercepted here. WiFi/BT MAC spoofing lands with
+ * the system-service hook layer (WifiManager/BluetoothAdapter proxies).
+ */
+class SpoofedContentResolver(
+    context: Context,
+    private val wrapped: ContentResolver,
+    private val virtualDevice: VirtualDeviceInfo,
+) : ContentResolver(context) {
+
+    private fun isAndroidIdUri(uri: android.net.Uri): Boolean =
+        uri.authority == "settings" && uri.lastPathSegment == "android_id"
+
+    override fun query(
+        uri: android.net.Uri,
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+        sortOrder: String?,
+    ): android.database.Cursor? {
+        if (isAndroidIdUri(uri)) {
+            return MatrixCursor(arrayOf("name", "value")).apply {
+                addRow(arrayOf("android_id", virtualDevice.androidId))
+            }
+        }
+        return wrapped.query(uri, projection, selection, selectionArgs, sortOrder)
+    }
+
+    override fun call(uri: android.net.Uri, method: String, arg: String?, extras: Bundle?): Bundle? {
+        if (uri.authority == "settings" && "android_id" == arg) {
+            return Bundle().apply { putString("value", virtualDevice.androidId) }
+        }
+        return wrapped.call(uri, method, arg, extras)
+    }
+
+    override fun getType(uri: android.net.Uri): String? = wrapped.getType(uri)
+    override fun insert(uri: android.net.Uri, values: android.content.ContentValues?): android.net.Uri? =
+        wrapped.insert(uri, values)
+    override fun delete(uri: android.net.Uri, selection: String?, selectionArgs: Array<out String>?): Int =
+        wrapped.delete(uri, selection, selectionArgs)
+    override fun update(
+        uri: android.net.Uri,
+        values: android.content.ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int = wrapped.update(uri, values, selection, selectionArgs)
 }

@@ -47,7 +47,7 @@ fun PatternLockView(
         if (size.width == 0) return null
         for (i in 0 until 9) {
             val c = centerOf(i)
-            val radius = size.minDimension / 9f
+            val radius = minOf(size.width, size.height) / 9f
             if ((pos - c).getDistance() <= radius) return i
         }
         return null

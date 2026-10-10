@@ -30,14 +30,16 @@ object HiddenApiBypass {
             return true
         }
         return runCatching {
+            val classArrayClass: Class<*> = emptyArray<Class<*>>().javaClass
+            val stringArrayClass: Class<*> = emptyArray<String>().javaClass
             val forName = Class::class.java.getDeclaredMethod("forName", String::class.java)
             val getDeclaredMethod = Class::class.java.getDeclaredMethod(
-                "getDeclaredMethod", String::class.java, arrayOf<Class<*>>()::class.java,
+                "getDeclaredMethod", String::class.java, classArrayClass,
             )
             val vmRuntimeClass = forName.invoke(null, "dalvik.system.VMRuntime") as Class<*>
             val getRuntime = getDeclaredMethod.invoke(vmRuntimeClass, "getRuntime", emptyArray()) as java.lang.reflect.Method
             val setExemptions = getDeclaredMethod.invoke(
-                vmRuntimeClass, "setHiddenApiExemptions", arrayOf(arrayOf<String>()::class.java),
+                vmRuntimeClass, "setHiddenApiExemptions", arrayOf(stringArrayClass),
             ) as java.lang.reflect.Method
             val runtime = getRuntime.invoke(null)
             setExemptions.invoke(runtime, arrayOf("L"))

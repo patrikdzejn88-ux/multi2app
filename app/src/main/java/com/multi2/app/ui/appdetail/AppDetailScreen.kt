@@ -40,7 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -152,7 +152,7 @@ fun AppDetailScreen(
                 OutlinedButton(onClick = {
                     val ok = CloneShortcutManager.pin(
                         context, entity.pkg, entity.spaceId,
-                        entity.fakeLabel ?: entity.label, icon?.asBitmap(),
+                        entity.fakeLabel ?: entity.label, icon?.asAndroidBitmap(),
                     )
                     Toast.makeText(
                         context,

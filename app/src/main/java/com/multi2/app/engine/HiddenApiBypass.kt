@@ -37,7 +37,9 @@ object HiddenApiBypass {
                 "getDeclaredMethod", String::class.java, classArrayClass,
             )
             val vmRuntimeClass = forName.invoke(null, "dalvik.system.VMRuntime") as Class<*>
-            val getRuntime = getDeclaredMethod.invoke(vmRuntimeClass, "getRuntime", emptyArray()) as java.lang.reflect.Method
+            val getRuntime = getDeclaredMethod.invoke(
+                vmRuntimeClass, "getRuntime", emptyArray<Class<*>>(),
+            ) as java.lang.reflect.Method
             val setExemptions = getDeclaredMethod.invoke(
                 vmRuntimeClass, "setHiddenApiExemptions", arrayOf(stringArrayClass),
             ) as java.lang.reflect.Method

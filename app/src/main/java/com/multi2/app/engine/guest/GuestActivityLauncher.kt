@@ -147,9 +147,11 @@ object GuestActivityLauncher {
         val app = guest.application ?: stub.application
         val intent = Intent().setComponent(ComponentName(pkg, activityClassName))
         val activityThread = runCatching {
-            Class.forName("android.app.ActivityThread")
-                .getDeclaredMethod("currentActivityThread")
-                .invoke(null)
+            val threadClass = Class.forName("android.app.ActivityThread")
+            com.multi2.app.engine.HiddenApiBypass
+                .findHiddenMethod(threadClass, "currentActivityThread")
+                ?.apply { isAccessible = true }
+                ?.invoke(null)
         }.getOrNull()
 
         // re-assert exemptions on this thread's process before reflection

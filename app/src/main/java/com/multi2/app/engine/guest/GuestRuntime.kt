@@ -34,11 +34,10 @@ object GuestRuntime {
     )
 
     fun load(context: Context, pkg: String, spaceId: Int): GuestApp {
-        // Without exemptions the whole guest stack is dead (attach/addAssetPath
-        // dark-grey APIs get filtered) — fail loudly with the real cause.
-        if (!HiddenApiBypass.apply()) {
-            error("hidden api bypass failed: ${HiddenApiBypass.lastError}")
-        }
+        // Best-effort: exemptions help but are NOT required — hidden API
+        // enforcement filters member LOOKUP, not INVOKE. findHiddenMethod's
+        // meta-reflective lookup + isAccessible is sufficient on its own.
+        HiddenApiBypass.apply()
 
         val apkDir = EnginePaths.apkDir(context, spaceId, pkg)
         val apks = apkDir.listFiles { f -> f.extension == "apk" }

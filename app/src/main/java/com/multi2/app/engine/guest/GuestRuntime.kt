@@ -34,7 +34,11 @@ object GuestRuntime {
     )
 
     fun load(context: Context, pkg: String, spaceId: Int): GuestApp {
-        HiddenApiBypass.apply()
+        // Without exemptions the whole guest stack is dead (attach/addAssetPath
+        // dark-grey APIs get filtered) — fail loudly with the real cause.
+        if (!HiddenApiBypass.apply()) {
+            error("hidden api bypass failed: ${HiddenApiBypass.lastError}")
+        }
 
         val apkDir = EnginePaths.apkDir(context, spaceId, pkg)
         val apks = apkDir.listFiles { f -> f.extension == "apk" }
@@ -111,10 +115,10 @@ object GuestRuntime {
             android.app.Application()
         }
 
-        // Application.attach(Context) — hidden API; requires HiddenApiBypass
-        val attach = android.app.Application::class.java.getDeclaredMethod(
-            "attach", Context::class.java,
-        )
+        // Application.attach(Context) — hidden API; meta-reflective lookup
+        // survives even when runtime exemptions are unreliable (API 15+).
+        val attach = HiddenApiBypass.findHiddenMethod(android.app.Application::class.java, "attach")
+            ?: error("Application.attach not found")
         attach.isAccessible = true
         attach.invoke(application, guestContext)
         application.onCreate()

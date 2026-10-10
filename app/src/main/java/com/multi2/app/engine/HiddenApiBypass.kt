@@ -23,6 +23,10 @@ object HiddenApiBypass {
     var applied: Boolean = false
         private set
 
+    @Volatile
+    var lastError: String? = null
+        private set
+
     fun apply(): Boolean {
         if (applied) return true
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) {
@@ -49,8 +53,28 @@ object HiddenApiBypass {
             Log.i(TAG, "hidden api exemptions applied")
             true
         }.getOrElse {
-            Log.w(TAG, "bypass failed: ${it.message}")
+            lastError = "${it.javaClass.simpleName}: ${it.message}"
+            Log.w(TAG, "bypass failed: $lastError")
             false
         }
+    }
+
+    /**
+     * Meta-reflective lookup that returns hidden members even when runtime
+     * exemptions failed: invoking getDeclaredMethods reflectively makes the
+     * hidden-member filter see java.lang.Class as the caller, not our code.
+     */
+    fun findHiddenMethod(clazz: Class<*>, name: String): java.lang.reflect.Method? {
+        // 1) normal lookup (works once exemptions are effective)
+        runCatching {
+            clazz.declaredMethods.firstOrNull { it.name == name }?.let { return it }
+        }
+        // 2) meta-reflective lookup (works even without exemptions)
+        return runCatching {
+            val gdm = Class::class.java.getDeclaredMethod("getDeclaredMethods")
+            @Suppress("UNCHECKED_CAST")
+            val all = gdm.invoke(clazz) as Array<java.lang.reflect.Method>
+            all.firstOrNull { it.name == name }
+        }.getOrNull()
     }
 }

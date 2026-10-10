@@ -49,8 +49,10 @@ class ApkInstaller @Inject constructor(
             // Android 14+ refuses to dex-load writable files:
             // "Writable dex file ... is not allowed" (SecurityException)
             dest.setReadOnly()
+            verifyCopy(File(src), dest)
             dest
         }
+        verifyDexPresent(copied.first())
         parse(copied.first(), spaceId, expectedPkg = pkg)
     }
 
@@ -71,8 +73,10 @@ class ApkInstaller @Inject constructor(
             val dest = File(destDir, if (i == 0) "base.apk" else "split_$i.apk")
             apk.inputStream().use { input -> dest.outputStream().use { input.copyTo(it) } }
             dest.setReadOnly() // Android 14+ DCL restriction
+            verifyCopy(apk, dest)
             dest
         }
+        verifyDexPresent(copied.first())
         tmpDir.deleteRecursively()
         parsed.copy(apkFiles = copied)
     }
@@ -106,6 +110,24 @@ class ApkInstaller @Inject constructor(
             }
         }
         libDir
+    }
+
+    /** Guard against truncated copies (e.g. incremental-install sources). */
+    private fun verifyCopy(src: File, dest: File) {
+        val expected = src.length()
+        val actual = dest.length()
+        require(expected == actual) {
+            "apk copy truncated: ${dest.name} ($expected -> $actual bytes)"
+        }
+    }
+
+    /** Base apk must contain code; resources-only files are useless to clone. */
+    private fun verifyDexPresent(baseApk: File) {
+        val dexCount = ZipFile(baseApk).use { zip ->
+            zip.entries().asSequence()
+                .count { !it.isDirectory && it.name.matches(Regex("classes\\d*\\.dex")) }
+        }
+        require(dexCount > 0) { "base.apk contains no dex: ${baseApk.name}" }
     }
 
     private fun extractApks(container: File, destDir: File): List<File> {

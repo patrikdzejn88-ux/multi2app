@@ -42,28 +42,50 @@ object GuestActivityLauncher {
         pkg: String,
         spaceId: Int,
     ): Result<GuestActivityInstance> = runCatching {
-        val activityClassName = resolveLauncherActivity(stub, pkg, spaceId)
-            ?: error("no launcher activity for $pkg")
-        Log.i(TAG, "launching guest activity: $activityClassName")
+        val candidates = resolveLauncherCandidates(stub, pkg, spaceId)
+        require(candidates.isNotEmpty()) { "no launcher activity for $pkg" }
 
-        val activity = guest.classLoader.loadClass(activityClassName)
-            .getDeclaredConstructor().newInstance() as Activity
+        // Try candidates until one actually loads from the guest dex —
+        // host PM may return an activity-alias name that has no class.
+        var lastError: Throwable? = null
+        for (activityClassName in candidates) {
+            val loaded = runCatching {
+                guest.classLoader.loadClass(activityClassName)
+                    .getDeclaredConstructor().newInstance() as Activity
+            }
+            loaded.onFailure { lastError = it }
+            val activity = loaded.getOrNull() ?: continue
+            Log.i(TAG, "launching guest activity: $activityClassName")
 
-        attachActivity(stub, activity, guest, activityClassName, spaceId)
-        callOnCreate(activity)
+            attachActivity(stub, activity, guest, activityClassName, spaceId)
+            callOnCreate(activity)
 
-        val decor = runCatching { activity.window?.decorView }.getOrNull()
-        GuestActivityInstance(activity, decor)
+            val decor = runCatching { activity.window?.decorView }.getOrNull()
+            return@runCatching GuestActivityInstance(activity, decor)
+        }
+        throw IllegalStateException(
+            "no loadable launcher activity for $pkg (tried ${candidates.size}): ${lastError?.message}",
+        )
     }
 
-    private fun resolveLauncherActivity(context: Context, pkg: String, spaceId: Int): String? {
-        // 1) host clone: ask the host PackageManager for the launch component
+    /**
+     * Ordered launcher-activity candidates with activity-alias resolution:
+     * PackageManager returns the alias component for apps like foodora/
+     * onlinepizza/Play Store (com.android.vending.AssetBrowserActivity is an
+     * alias); the real class is ActivityInfo.targetActivity.
+     */
+    private fun resolveLauncherCandidates(context: Context, pkg: String, spaceId: Int): List<String> {
+        val out = LinkedHashSet<String>()
+
+        // 1) host clone: launch component + its alias target
         runCatching {
-            context.packageManager.getLaunchIntentForPackage(pkg)?.component?.className?.let {
-                return it
+            context.packageManager.getLaunchIntentForPackage(pkg)?.component?.let { comp ->
+                out += comp.className
+                resolveAliasTarget(context.packageManager, comp)?.let { out += it }
             }
         }
-        // 2) file import: first exported activity from the archive
+
+        // 2) archive activities: exported first; alias targets included
         val baseApk = EnginePaths.apkDir(context, spaceId, pkg).absolutePath + "/base.apk"
         val flags = PackageManager.GET_ACTIVITIES.toLong()
         val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -72,11 +94,24 @@ object GuestActivityLauncher {
             @Suppress("DEPRECATION")
             context.packageManager.getPackageArchiveInfo(baseApk, flags.toInt())
         }
-        return info?.activities
-            ?.firstOrNull { it.exported }
-            ?.name
-            ?: info?.activities?.firstOrNull()?.name
+        val activities = info?.activities.orEmpty().toList()
+        activities.filter { it.exported }.forEach { ai ->
+            out += ai.name
+            ai.targetActivity?.let { out += it }
+        }
+        activities.forEach { ai ->
+            out += ai.name
+            ai.targetActivity?.let { out += it }
+        }
+        return out.toList()
     }
+
+    /** Resolve an activity-alias component to its real target class. */
+    private fun resolveAliasTarget(pm: PackageManager, component: ComponentName): String? =
+        runCatching {
+            @Suppress("DEPRECATION")
+            pm.getActivityInfo(component, 0).targetActivity
+        }.getOrNull()
 
     /** Probe and invoke the API-level-correct Activity.attach signature. */
     private fun attachActivity(

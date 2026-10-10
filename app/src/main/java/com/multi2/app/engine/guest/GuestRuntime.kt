@@ -41,6 +41,9 @@ object GuestRuntime {
             ?.sortedByDescending { it.name == "base.apk" }
             ?: error("apk not found for $pkg")
         require(apks.isNotEmpty()) { "apk not found for $pkg" }
+        // Android 14+ DCL restriction: dex files must be read-only.
+        // Also heals clones installed before the installer enforced this.
+        apks.forEach { it.setReadOnly() }
 
         val dexOut = EnginePaths.dexOptDir(context, spaceId, pkg).apply { mkdirs() }
         val libDir = EnginePaths.libDir(context, spaceId, pkg)

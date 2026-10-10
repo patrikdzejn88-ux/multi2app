@@ -46,6 +46,9 @@ class ApkInstaller @Inject constructor(
             val name = if (i == 0) "base.apk" else "split_$i.apk"
             val dest = File(destDir, name)
             File(src).inputStream().use { input -> dest.outputStream().use { input.copyTo(it) } }
+            // Android 14+ refuses to dex-load writable files:
+            // "Writable dex file ... is not allowed" (SecurityException)
+            dest.setReadOnly()
             dest
         }
         parse(copied.first(), spaceId, expectedPkg = pkg)
@@ -67,6 +70,7 @@ class ApkInstaller @Inject constructor(
         val copied = apks.mapIndexed { i, apk ->
             val dest = File(destDir, if (i == 0) "base.apk" else "split_$i.apk")
             apk.inputStream().use { input -> dest.outputStream().use { input.copyTo(it) } }
+            dest.setReadOnly() // Android 14+ DCL restriction
             dest
         }
         tmpDir.deleteRecursively()
@@ -93,6 +97,7 @@ class ApkInstaller @Inject constructor(
                                 zip.getInputStream(entry).use { input ->
                                     dest.outputStream().use { input.copyTo(it) }
                                 }
+                                dest.setReadOnly()
                             }
                         }
                         break // best-matching ABI only

@@ -9,9 +9,53 @@
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 
 static char g_lastError[512] = "none";
+static char g_level1Error[256] = "none";
+static char g_level2Error[256] = "none";
 
-static void setError(const char* what, const char* detail) {
-    snprintf(g_lastError, sizeof(g_lastError), "%s: %s", what, detail ? detail : "?");
+static void composeError() {
+    snprintf(g_lastError, sizeof(g_lastError), "jni[%s] dlsym[%s]", g_level1Error, g_level2Error);
+}
+
+/** libart.so moved into the ART APEX on Android 12+; plain names don't resolve. */
+static void* openArtLibrary() {
+    static const char* kPaths[] = {
+            "/apex/com.android.art/lib64/libart.so",
+            "/apex/com.android.art/lib/libart.so",
+            "/system/lib64/libart.so",
+            "/system/lib/libart.so",
+            "libart.so",
+            "libartd.so",
+            nullptr,
+    };
+    for (int i = 0; kPaths[i] != nullptr; i++) {
+        void* h = dlopen(kPaths[i], RTLD_NOW);
+        if (h != nullptr) {
+            LOGI("libart opened: %s", kPaths[i]);
+            return h;
+        }
+    }
+    // last resort: libart is already mapped into every app process —
+    // recover its absolute path from /proc/self/maps and dlopen that.
+    FILE* f = fopen("/proc/self/maps", "r");
+    if (f != nullptr) {
+        char line[512];
+        while (fgets(line, sizeof(line), f) != nullptr) {
+            if (strstr(line, "libart.so") == nullptr) continue;
+            const char* slash = strrchr(line, '/');
+            if (slash == nullptr) continue;
+            char path[256];
+            snprintf(path, sizeof(path), "%s", slash);
+            path[strcspn(path, "\r\n")] = 0;
+            void* h = dlopen(path, RTLD_NOW);
+            if (h != nullptr) {
+                LOGI("libart opened via maps: %s", path);
+                fclose(f);
+                return h;
+            }
+        }
+        fclose(f);
+    }
+    return nullptr;
 }
 
 /**
@@ -32,7 +76,7 @@ Java_com_multi2_app_engine_HiddenApiBypass_nativeApplyHiddenApiBypass(
     jclass vmRuntimeClass = env->FindClass("dalvik/system/VMRuntime");
     if (vmRuntimeClass == nullptr) {
         env->ExceptionClear();
-        setError("jni", "VMRuntime class not found");
+        snprintf(g_level1Error, sizeof(g_level1Error), "VMRuntime class not found");
     } else {
         jmethodID getRuntime = env->GetStaticMethodID(
                 vmRuntimeClass, "getRuntime", "()Ldalvik/system/VMRuntime;");
@@ -40,12 +84,12 @@ Java_com_multi2_app_engine_HiddenApiBypass_nativeApplyHiddenApiBypass(
                 vmRuntimeClass, "setHiddenApiExemptions", "([Ljava/lang/String;)V");
         if (getRuntime == nullptr || setExemptions == nullptr) {
             env->ExceptionClear();
-            setError("jni", "VMRuntime methods not found");
+            snprintf(g_level1Error, sizeof(g_level1Error), "VMRuntime methods not found");
         } else {
             jobject runtime = env->CallStaticObjectMethod(vmRuntimeClass, getRuntime);
             if (env->ExceptionCheck() || runtime == nullptr) {
                 if (env->ExceptionCheck()) { env->ExceptionDescribe(); env->ExceptionClear(); }
-                setError("jni", "getRuntime failed");
+                snprintf(g_level1Error, sizeof(g_level1Error), "getRuntime failed");
             } else {
                 jclass stringClass = env->FindClass("java/lang/String");
                 jstring all = env->NewStringUTF("L");
@@ -62,11 +106,9 @@ Java_com_multi2_app_engine_HiddenApiBypass_nativeApplyHiddenApiBypass(
                     jclass throwableClass = env->FindClass("java/lang/Throwable");
                     jmethodID getMessage = env->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
                     auto exMsg = (jstring) env->CallObjectMethod(ex, getMessage);
-                    char buf[256];
                     const char* nameStr = exName ? env->GetStringUTFChars(exName, nullptr) : "?";
                     const char* msgStr = exMsg ? env->GetStringUTFChars(exMsg, nullptr) : "(null)";
-                    snprintf(buf, sizeof(buf), "setExemptions threw %s(%s)", nameStr, msgStr);
-                    setError("jni", buf);
+                    snprintf(g_level1Error, sizeof(g_level1Error), "threw %s(%s)", nameStr, msgStr);
                     if (exName) env->ReleaseStringUTFChars(exName, nameStr);
                     if (exMsg) env->ReleaseStringUTFChars(exMsg, msgStr);
                 } else {
@@ -78,22 +120,25 @@ Java_com_multi2_app_engine_HiddenApiBypass_nativeApplyHiddenApiBypass(
     }
 
     // ---- Level 2: direct enforcement-policy flip inside libart.so ----
-    void* art = dlopen("libart.so", RTLD_NOW);
+    void* art = openArtLibrary();
     if (art == nullptr) {
-        setError("dlsym", "dlopen libart.so failed");
+        snprintf(g_level2Error, sizeof(g_level2Error), "all libart paths failed");
+        composeError();
         return JNI_FALSE;
     }
 
     // art::Runtime::instance_  (stable exported data symbol since API 26)
     void* instancePtr = dlsym(art, "_ZN3art7Runtime9instance_E");
     if (instancePtr == nullptr) {
-        setError("dlsym", "Runtime::instance_ not found");
+        snprintf(g_level2Error, sizeof(g_level2Error), "Runtime::instance_ not found");
+        composeError();
         dlclose(art);
         return JNI_FALSE;
     }
     void* runtime = *reinterpret_cast<void**>(instancePtr);
     if (runtime == nullptr) {
-        setError("dlsym", "Runtime::instance_ is null");
+        snprintf(g_level2Error, sizeof(g_level2Error), "Runtime::instance_ is null");
+        composeError();
         dlclose(art);
         return JNI_FALSE;
     }
@@ -118,7 +163,8 @@ Java_com_multi2_app_engine_HiddenApiBypass_nativeApplyHiddenApiBypass(
         }
     }
     if (setPolicy == nullptr) {
-        setError("dlsym", "SetHiddenApiEnforcementPolicy symbol not found");
+        snprintf(g_level2Error, sizeof(g_level2Error), "SetHiddenApiEnforcementPolicy symbol not found");
+        composeError();
         dlclose(art);
         return JNI_FALSE;
     }

@@ -1,8 +1,8 @@
 package com.multi2.app
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import com.multi2.app.engine.launch.CloneLauncher
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +17,7 @@ import javax.inject.Inject
  * the clone via CloneLauncher, then closes.
  */
 @AndroidEntryPoint
-class CompatShortcutPrepareActivity : Activity() {
+class CompatShortcutPrepareActivity : ComponentActivity() {
 
     @Inject lateinit var cloneLauncher: CloneLauncher
 
